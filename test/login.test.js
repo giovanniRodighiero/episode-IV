@@ -18,8 +18,8 @@ describe('LOGIN testing', () => {
 
     // TESTING MISSING PARAMS IN REQUEST BODY
     test.each([
-            ['email', { password: 'password', confirmPassword: 'password' }],
-            ['password', { email: 'mail@mail.it', confirmPassword: 'password' }]
+            ['email', { password: 'password' }],
+            ['password', { email: 'mail@mail.it' }]
         ])(
         'it should fail for missing params (%s)',
         async (fieldName, body) => {
@@ -111,7 +111,7 @@ describe('LOGIN testing', () => {
         });
 
         test('it should succeed for correct email and password', async () => {
-            expect.assertions(9);
+            expect.assertions(11);
 
             const body = {
                 email: 'info@crispybacon.it',

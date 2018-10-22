@@ -21,7 +21,19 @@ const test = {
         url: `${databaseUrl}-test`
     },
     jwtSecret,
-    userRoles
+    userRoles,
+    mailer: {
+        nodemailerConf: {
+            host: 'smtp.ethereal.email',
+            port: 587,
+            auth: {
+                user: 'i6t2mlf4ld4pwqct@ethereal.email',
+                pass: 'u8hR4an9ArfZ8aAtef'
+            }
+        },
+        from: 'noreply@crispybacon.it'
+    },
+    address: `http://localhost:${port}`
 }
 
 // DEVELOPMENT CONFIG
@@ -31,7 +43,19 @@ const development = {
         url: `${databaseUrl}-development`
     },
     jwtSecret,
-    userRoles
+    userRoles,
+    mailer: {
+        nodemailerConf: {
+            host: 'smtp.ethereal.email',
+            port: 587,
+            auth: {
+                user: 'i6t2mlf4ld4pwqct@ethereal.email',
+                pass: 'u8hR4an9ArfZ8aAtef'
+            }
+        },
+        from: 'noreply@crispybacon.it'
+    },
+    address: `http://localhost:${port}`
 }
 
 // PRODUCTION CONFIG

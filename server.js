@@ -1,6 +1,9 @@
 const fastify = require('fastify')();
 const fastifyMongoDb = require('fastify-mongodb');
 const jwt = require('fastify-jwt');
+const fastifyNodeMailer = require('fastify-nodemailer');
+const Ajv = require('ajv');
+
 
 const allConfigs = require('./config');
 
@@ -15,21 +18,30 @@ if (!process.env.NODE_ENV || !['test', 'development', 'production'].includes(pro
 console.log('NODE_ENV set to ', process.env.NODE_ENV);
 
 
+const ajv = new Ajv({
+    removeAdditional: true,
+    useDefaults: true,
+    coerceTypes: true,
+    $data: true
+});
+
 
 // SERVER BOOT FUNCTION
 async function buildFastify () {
 
+    // SET CUSTOM AJV INSTANCE FOR SCHEMA COMPILATION
+    fastify.setSchemaCompiler(schema => ajv.compile(schema));
 
-
-    // INJECT CONFIG VARIABLES TO THE MAIN INSTANCE
-    // (inside a controller it's available under this.config)
+    // INJECT CONFIG VARIABLES TO THE MAIN INSTANCE (fastify.config / this.config)
     fastify.decorate('config', allConfigs[process.env.NODE_ENV]);
 
-    // REGISTER JWT UTILITIES
+    // JWT UTILITIES (fastify.jwt / this.jwt)
     fastify.register(jwt, { secret: fastify.config.jwtSecret });
 
-    // DATABASE CONNECTION
-    // (inside a controller it's available under this.mongo.db, as well as this.mongo.ObjectId and this.mongo.client)
+    // NODEMAILER CONFIG (fastify.nodemailer / this.nodemailer)
+    fastify.register(fastifyNodeMailer, fastify.config.mailer.nodemailerConf);
+
+    // DATABASE CONNECTION (fastify.mongo / this.mongo => db, ObjectId, client)
     fastify.register(fastifyMongoDb, {
         useNewUrlParser: true,
         forceClose: true,      
@@ -41,12 +53,12 @@ async function buildFastify () {
         if (err) throw err;
 
         try {
-            console.log('connected')
+            console.log('Connected to ' + fastify.config.database.url + '\n');
 
             // REST APIs REGISTRATION
             await initRoutes(fastify);
 
-            // INJECT CUSTOM ERRORS HANDLER
+            // CUSTOM ERRORS HANDLER REGISTRATION
             initErrors(fastify);
 
         } catch (error) { throw err; }

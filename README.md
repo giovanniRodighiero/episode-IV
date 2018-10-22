@@ -2,7 +2,9 @@
 
 ## TODO
 * Set up the default logger `Pino` and replace most of the `console.log`;
-* Users crud
+* Users crud;
+* Check on all config required options before boot;
+* Swagger integration and config for existing API;
 
 ## Requirements
 * Raccomended Node.js `>= 9.11.x`, but should work with `>= 8.6.x`;
@@ -24,9 +26,20 @@
 * `MongoDB` connection to env-based database;
 * Authentication middleware with `JWT`;
 * Authorization middleware, based on user's role;
-* Login API;
+* Registration flow with account confirmation through email;
+* Login API with token;
 
 ## Project structure
-* `index.js` Server entry point, the one to execute
-* `server.js` Main app instance creation and configuration;
-* `config.js` Configuration variables and constants grouped by the app's environment of execution (test, dev, prod);
+* `index.js`: server entry point, the one to execute
+* `server.js`: main app instance creation and configuration;
+* `config.js`: configuration variables and constants grouped by the app's environment of execution (test, dev, prod);
+* `src/resources/`: API resources, a folder for each one containing _schema_, _controller_, _database migration_, ecc...;
+* `src/services/`: misc services or utility functions;
+* `src/views/`: html templates, used in the emails for instance.
+
+
+### Registration flow
+1. A user can register an account with  `/api/v1/registration`;
+2. An email will be sent to the provided address with a confirmation link with the following format `[server-address]/api/v1/confirmation/:token`;
+3. The `token` is a `JWT` token with an expiration period of __2 days__ containing the email of the account to confirm.
+4. The confirmation email can be re-sent any time using `/api/v1/confirmation`;

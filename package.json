@@ -4,7 +4,7 @@
   "description": "Basic project for an API service with mongodb",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles"
+    "test": "NODE_ENV=test jest --runInBand --detectOpenHandles --verbose"
   },
   "author": "Giovanni Rodighiero",
   "license": "ISC",
@@ -12,6 +12,8 @@
     "fastify": "^1.12.1",
     "fastify-jwt": "^0.5.0",
     "fastify-mongodb": "^0.9.0",
+    "fastify-nodemailer": "^1.4.1",
+    "handlebars": "^4.0.12",
     "node-password-encrypter": "^1.0.0"
   },
   "devDependencies": {

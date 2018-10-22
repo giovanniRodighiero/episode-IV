@@ -1,5 +1,6 @@
 const errorTypes = {
     // generic errors
+    INTERNAL_SERVER_ERROR: 'internal_server_error',
     VALIDATION_ERROR: 'validation_error',
     MISSING_PARAM: 'missing_param',
     NOT_FOUND: 'not_found',

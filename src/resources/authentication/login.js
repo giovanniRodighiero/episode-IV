@@ -49,7 +49,7 @@ const loginController = async function (request, reply) {
     } catch (error) {
         console.log(error);
         reply.code(500);
-        return error;
+        return { code: errorTypes.INTERNAL_SERVER_ERROR };
     }
 };
 
