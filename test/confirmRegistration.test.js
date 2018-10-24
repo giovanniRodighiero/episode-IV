@@ -61,7 +61,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should fail for expired token', done => {
         expect.assertions(2);
 
-        fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: 1 }, async (err, token) =>{
+        fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: 1 }, async (err, token) => {
             await sleep(2000);
             
             const body = { token };
@@ -87,7 +87,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should fail for not existing user email', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) =>{            
+            fastify.jwt.sign({ account: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { token };
                 try {
                     const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
@@ -107,7 +107,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should fail for already active user account', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) =>{            
+            fastify.jwt.sign({ account: 'info@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { token };
                 try {
                     const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
@@ -127,7 +127,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should succeed for an existing, non active account', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) =>{            
+            fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { token };
                 try {
                     const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });

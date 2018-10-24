@@ -1,6 +1,7 @@
 const { loginController, loginSchema } = require('./login');
 const { registrationController, registrationSchema } = require('./registration')
 const { confirmRegistrationController, confirmRegistrationSchema } = require('./confirmRegistration');
+const { resendRegistrationEmailController, resendRegistrationEmailSchema } = require('./resendRegistrationEmail');
 
 function initAuthentication (fastify) {
 
@@ -15,6 +16,10 @@ function initAuthentication (fastify) {
     fastify.post('/api/v1/confirm-registration', {
         schema: confirmRegistrationSchema
     }, confirmRegistrationController);
+
+    fastify.post('/api/v1/resend-confirmation', {
+        schema: resendRegistrationEmailSchema
+    }, resendRegistrationEmailController);
 
 };
 
