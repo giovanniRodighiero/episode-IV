@@ -40,6 +40,7 @@
 
 ### Registration flow
 1. A user can register an account with  `/api/v1/registration`;
-2. An email will be sent to the provided address with a confirmation link with the following format `[server-address]/api/v1/confirmation/:token`;
-3. The `token` is a `JWT` token with an expiration period of __2 days__ containing the email of the account to confirm.
-4. The confirmation email can be re-sent any time using `/api/v1/confirmation`;
+2. An email will be sent to the provided address with a confirmation link with the following format `[server-address]/confirmation/:token`;
+3. The token should be included in the body of an additional request to `POST /api/v1/confirm-registration`;
+4. The `token` is a `JWT` token with an expiration period of __2 days__ containing the email of the account to confirm.
+5. The confirmation email can be re-sent any time using `/api/v1/resend-confirmation`;

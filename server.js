@@ -2,6 +2,7 @@ const fastify = require('fastify')();
 const fastifyMongoDb = require('fastify-mongodb');
 const jwt = require('fastify-jwt');
 const fastifyNodeMailer = require('fastify-nodemailer');
+const fastifySwagger = require('fastify-swagger');
 const Ajv = require('ajv');
 
 
@@ -9,7 +10,7 @@ const allConfigs = require('./config');
 
 const initRoutes = require('./src/resources');
 const { initErrors } = require('./src/services/errors');
-
+const swaggerConfig = require('./src/services/swagger');
 
 
 // SET UP CORRECT ENV VARIABLE WITH DEFAULT
@@ -40,6 +41,9 @@ async function buildFastify () {
 
     // NODEMAILER CONFIG (fastify.nodemailer / this.nodemailer)
     fastify.register(fastifyNodeMailer, fastify.config.mailer.nodemailerConf);
+
+    // DOCUMENTATION PLUGIN
+    fastify.register(fastifySwagger, swaggerConfig);
 
     // DATABASE CONNECTION (fastify.mongo / this.mongo => db, ObjectId, client)
     fastify.register(fastifyMongoDb, {

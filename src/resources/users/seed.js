@@ -5,7 +5,14 @@ const users = [
     {
         email: 'info@crispybacon.it',
         password: 'password',
-        role: 100
+        role: 100,
+        accountActive: true
+    },
+    {
+        email: 'info+user@crispybacon.it',
+        password: 'password',
+        role: 70,
+        accountActive: false
     }
 ];
 
@@ -18,7 +25,7 @@ async function seedUsers (database) {
 
         for (const user of users) {
             const { salt, encryptedContent: password } = await encrypt({ content: user.password, keylen: 128, iterations: 1000 });
-            await Users.insertOne({ email: user.email, salt, password, role: user.role });
+            await Users.insertOne({ ...user, salt, password });
         }
         console.log('seeding users done, no errors');
         return true;

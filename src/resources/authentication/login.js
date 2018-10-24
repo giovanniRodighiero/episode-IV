@@ -55,6 +55,10 @@ const loginController = async function (request, reply) {
 
 const loginSchema = {
 
+    description: 'Used to obtain an authentication token, which allows to perform successful requests to protected APIs',
+    tags: ['Authentication'],
+    summary: 'Users login',
+
     body: {
         type: 'object',
         required: ['email', 'password'],
@@ -67,6 +71,7 @@ const loginSchema = {
 
     response: {
         200: {
+            description: 'Successful login',
             type: 'object',
             required: ['token', 'user'],
             properties: {

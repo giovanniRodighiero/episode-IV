@@ -9,7 +9,7 @@ const requestsDetails = {
 };
 let fastify;
 
-describe('REGISTRATION testing', () => {
+describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
         try {

@@ -9,7 +9,7 @@ const requestsDetails = {
 };
 let fastify;
 
-describe('LOGIN testing', () => {
+describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
         fastify = await buildFastify();

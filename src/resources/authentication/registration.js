@@ -63,6 +63,10 @@ const registrationController = async function (request, reply) {
 
 const registrationSchema = {
 
+    description: 'Used to create a new account for a user. After a successful registration, an email with the account activation link will be sent to the provided email address.',
+    summary: 'Users registration',
+    tags: ['Authentication'],
+
     body: {
         type: 'object',
         required: ['email', 'password', 'confirmPassword', 'privacyAccepted'],
@@ -70,12 +74,22 @@ const registrationSchema = {
             email: { type: 'string', format: 'email' },
             password: { type: 'string' },
             confirmPassword: { const: { '$data': '1/password' } },
-            privacyAccepted: { type: 'boolean', const: true }
+            privacyAccepted: { type: 'boolean', const: true, description: 'Explicit privacy consent' }
         },
         additionalProperties: false
     },
 
     response: {
+
+        201: {
+            type: 'object',
+            required: ['code'],
+            description: 'Successful response',
+            properties: {
+                code: { type: 'string' }
+            }
+        },
+
         400: 'baseError#',
 
         409: 'baseError#'
