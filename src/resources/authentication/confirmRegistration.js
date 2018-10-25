@@ -28,12 +28,12 @@ const confirmRegistrationController = function (request, reply) {
             reply.send({ code: errorTypes.NOT_FOUND });
         } else {
             // ACCOUNT ALREADY ACTIVE
-            if (user.accountActive) {
+            if (user.accountConfirmed) {
                 reply.code(400);
                 reply.send({ code: errorTypes.ALREADY_ACTIVE });
             } else {
                 // ALL FINE
-                await Users.updateOne({ email }, { $set: { accountActive: true }});
+                await Users.updateOne({ email }, { $set: { accountConfirmed: true }});
                 reply.code(200);
                 reply.send({ code: 'success' });
             }

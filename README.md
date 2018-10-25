@@ -44,3 +44,6 @@
 3. The token should be included in the body of an additional request to `POST /api/v1/confirm-registration`;
 4. The `token` is a `JWT` token with an expiration period of __2 days__ containing the email of the account to confirm.
 5. The confirmation email can be re-sent any time using `/api/v1/resend-confirmation`;
+6. A non confirmed user can login in, but he won't see most of the data/resources;
+7. A password recovery can be requested by a user with a confirmed account, using `/api/v1/password-recover`, which returns a recover token;
+8. The new password can be updated from `/api/v1/password-recover/:token`.

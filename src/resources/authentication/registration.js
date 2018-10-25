@@ -22,7 +22,7 @@ const registrationController = async function (request, reply) {
             password: encryptedContent,
             salt,
             role: this.config.userRoles.USER,
-            accountActive: false,
+            accountConfirmed: false,
             privacyAccepted: true
         });
 

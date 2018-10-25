@@ -6,13 +6,13 @@ const users = [
         email: 'info@crispybacon.it',
         password: 'password',
         role: 100,
-        accountActive: true
+        accountConfirmed: true
     },
     {
         email: 'info+user@crispybacon.it',
         password: 'password',
         role: 70,
-        accountActive: false
+        accountConfirmed: false
     }
 ];
 

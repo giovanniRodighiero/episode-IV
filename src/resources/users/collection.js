@@ -1,6 +1,7 @@
 // INDEXES SPECIFICATIONS
 const indexes = [
-    [ { email: 1 }, { unique: true } ]
+    [ { email: 1 }, { unique: true } ],
+    [ { accountConfirmed: 1 } ]
 ];
 
 

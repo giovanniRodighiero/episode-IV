@@ -1,21 +1,22 @@
 const { userRegistrationTemplate } = require('../../views/email');
 const { errorTypes } = require('../../services/errors');
 
-
-const resendRegistrationEmailController = async function (request, reply) {
+const passwordRecoverController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
     const { email } = request.body;
 
     try {
         const user = await Users.findOne({ email });
+        // USER NOT FOUND
         if (!user) {
             reply.code(404);
             return { code: errorTypes.NOT_FOUND };
         }
 
-        if (user.accountConfirmed) {
+        // USER ACCOUNT NOT CONFIRMED
+        if (!user.accountConfirmed) {
             reply.code(403);
-            return { code: errorTypes.ALREADY_ACTIVE };
+            return { code: errorTypes.NOT_AUTHORIZED };
         }
 
         this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
@@ -28,10 +29,10 @@ const resendRegistrationEmailController = async function (request, reply) {
             this.nodemailer.sendMail({
                 from: this.config.mailer.from,
                 to: email,
-                subject: 'Successful registration',
+                subject: 'Password recovery',
                 html: userRegistrationTemplate({
-                    htmlTitle: 'Registration',
-                    activationLink: this.config.address + '/api/v1/confirmation/' + token
+                    htmlTitle: 'Password Recovery',
+                    activationLink: this.config.address + '/api/v1/recovery/' + token
                 })
             }, (err, info) => {
                 if (err) {
@@ -39,12 +40,12 @@ const resendRegistrationEmailController = async function (request, reply) {
                     reply.code(500);
                     reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
                 }
-
+    
                 reply.code(200);
                 reply.send({ code: 'success' });
             });
+        }); 
 
-        });
     } catch (error) {
         console.log(error);
         reply.code(500);
@@ -52,10 +53,10 @@ const resendRegistrationEmailController = async function (request, reply) {
     }
 };
 
-const resendRegistrationEmailSchema = {
-    summary: 'Resend the account confirmation email',
-    description: 'Resend the account confirmation email for a specified email address. It only works for a non-active account.',
-    tags: ['Authentication'],
+const passwordRecoverSchema = {
+    summary: 'Send an email with the password recovery link',
+    description: 'Send an email with the password recovery link for a confirmed user account.',
+    tags: ['Authorization'],
 
     body: {
         type: 'object',
@@ -64,11 +65,10 @@ const resendRegistrationEmailSchema = {
             email: { type: 'string', format: 'email' }
         },
         additionalProperties: false,
-        description: 'Email of the account to send the confirmation email.'
+        description: 'Email of the account to send the recover password email.'
     },
 
     response: {
-
         200: {
             type: 'object',
             required: ['code'],
@@ -77,16 +77,11 @@ const resendRegistrationEmailSchema = {
             }
         },
 
-        400: 'baseError#',
-
-        403: 'baseError#',
-
         404: 'baseError#'
-
     }
 };
 
 module.exports = {
-    resendRegistrationEmailController,
-    resendRegistrationEmailSchema
+    passwordRecoverController,
+    passwordRecoverSchema
 };
