@@ -1,5 +1,5 @@
 const { userRegistrationTemplate } = require('../../views/email');
-const { errorTypes } = require('../../services/errors');
+const { errorTypes } = require('../errors/schema');
 
 const passwordRecoverController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
@@ -62,7 +62,7 @@ const passwordRecoverSchema = {
         type: 'object',
         required: ['email'],
         properties: {
-            email: { type: 'string', format: 'email' }
+            email: { type: 'string', format: 'email', transform: ['trim', 'toLowerCase'] }
         },
         additionalProperties: false,
         description: 'Email of the account to send the recover password email.'

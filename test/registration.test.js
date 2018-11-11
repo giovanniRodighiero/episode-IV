@@ -1,5 +1,5 @@
 const buildFastify = require('../server');
-const { errorTypes } = require('../src/services/errors');
+const { errorTypes } = require('../src/resources/errors/schema');
 const { seedUsers } = require('../src/resources/users/seed');
 
 const requestsDetails = {
@@ -120,7 +120,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             }
         });
 
-        test('it should fail for non accpeted privacy', async () => {
+        test('it should fail for non accepted privacy', async () => {
             expect.assertions(3);
             
             const body = {

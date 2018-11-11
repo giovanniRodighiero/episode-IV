@@ -1,4 +1,4 @@
-const { errorTypes } = require('../../services/errors');
+const { errorTypes } = require('../errors/schema');
 
 const MALFORMED_JWT = 'JsonWebTokenError';
 const EXPIRED_JWT = 'TokenExpiredError';

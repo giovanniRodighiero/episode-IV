@@ -1,5 +1,5 @@
 const { userRegistrationTemplate } = require('../../views/email');
-const { errorTypes } = require('../../services/errors');
+const { errorTypes } = require('../errors/schema');
 
 
 const resendRegistrationEmailController = async function (request, reply) {
@@ -61,7 +61,7 @@ const resendRegistrationEmailSchema = {
         type: 'object',
         required: ['email'],
         properties: {
-            email: { type: 'string', format: 'email' }
+            email: { type: 'string', format: 'email', transform: ['trim', 'toLowerCase'] }
         },
         additionalProperties: false,
         description: 'Email of the account to send the confirmation email.'

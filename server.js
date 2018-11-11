@@ -9,7 +9,6 @@ const Ajv = require('ajv');
 const allConfigs = require('./config');
 
 const initRoutes = require('./src/resources');
-const { initErrors } = require('./src/services/errors');
 const swaggerConfig = require('./src/services/swagger');
 
 
@@ -26,6 +25,8 @@ const ajv = new Ajv({
     $data: true
 });
 
+// SETUP AJV KEYWORDS
+require('ajv-keywords')(ajv, 'transform');
 
 // SERVER BOOT FUNCTION
 async function buildFastify () {
@@ -61,9 +62,6 @@ async function buildFastify () {
 
             // REST APIs REGISTRATION
             await initRoutes(fastify);
-
-            // CUSTOM ERRORS HANDLER REGISTRATION
-            initErrors(fastify);
 
         } catch (error) { throw err; }
     });

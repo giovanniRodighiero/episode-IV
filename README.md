@@ -46,4 +46,4 @@
 5. The confirmation email can be re-sent any time using `/api/v1/resend-confirmation`;
 6. A non confirmed user can login in, but he won't see most of the data/resources;
 7. A password recovery can be requested by a user with a confirmed account, using `/api/v1/password-recover`, which returns a recover token;
-8. The new password can be updated from `/api/v1/password-recover/:token`.
+8. The new password can be recovered/updated from `/api/v1/confirm-password-recover`, using the previous recover token.

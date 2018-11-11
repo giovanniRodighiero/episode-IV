@@ -1,5 +1,5 @@
 const { compare } = require('node-password-encrypter');
-const { errorTypes } = require('../../services/errors');
+const { errorTypes } = require('../errors/schema');
 
 
 
@@ -63,8 +63,8 @@ const loginSchema = {
         type: 'object',
         required: ['email', 'password'],
         properties: {
-            email: { type: 'string', format: 'email' },
-            password: { type: 'string' }
+            email: { type: 'string', format: 'email', transform: ['trim', 'toLowerCase'] },
+            password: { type: 'string', transform: ['trim', 'toLowerCase'] }
         },
         additionalProperties: false
     },

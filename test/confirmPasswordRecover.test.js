@@ -2,9 +2,10 @@ const buildFastify = require('../server');
 const { errorTypes } = require('../src/resources/errors/schema');
 const { seedUsers } = require('../src/resources/users/seed');
 
+
 const requestsDetails = {
     method: 'POST',
-    url: '/api/v1/confirm-registration',
+    url: '/api/v1/confirm-password-recover',
     headers: { 'Content-Type': 'application/json' }
 };
 let fastify;
@@ -13,7 +14,8 @@ function sleep(ms = 0) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};`, () =>{
+
+describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
         fastify = await buildFastify();
@@ -21,12 +23,15 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
     });
 
     test.each([
-        ['token', {  }]
+        ['token', { password: 'password', confirmPassword: 'password' }],
+        ['password', { confirmPassword: 'password', token: 'token' }],
+        ['confirmPassword', { password: 'password', token: 'token' }]
     ])('it should fail for missing params (%s)',
         async (fieldName, body) => {
             expect.assertions(6);
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body, });
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(400);
@@ -43,19 +48,22 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
     );
 
     test('it should fail for invalid token', async () => {
-        expect.assertions(2);
+        expect.assertions(4);
 
-        const body = { token: 'invalidtoken' };
+        const body = { token: 'token', password: 'pass', confirmPassword: 'pass' };
         try {
             const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(400);
+            expect(!!payload).toBe(true);
             expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
+            expect(payload.fieldName).toBe('token');
         } catch (error) {
             console.log(error);
-            expect(error).toBeUndefined();            
+            expect(error).toBeUndefined();
         }
+
     });
 
     test('it should fail for expired token', done => {
@@ -63,8 +71,8 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
 
         fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: 1 }, async (err, token) => {
             await sleep(2000);
-            
-            const body = { token };
+            const body = { token, password: 'pass', confirmPassword: 'pass' };
+
             try {
                 const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
                 const payload = JSON.parse(_payload);
@@ -74,21 +82,21 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
                 done();
             } catch (error) {
                 console.log(error);
-                expect(error).toBeUndefined();            
+                expect(error).toBeUndefined();
+                done();        
             }
 
         });
     });
 
     describe('', () => {
-
         beforeAll(async () => seedUsers(fastify.mongo.db));
 
         test('it should fail for not existing user email', done => {
             expect.assertions(2);
     
             fastify.jwt.sign({ account: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token };
+                const body = { token, password: 'pass', confirmPassword: 'pass' };
                 try {
                     const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
                     const payload = JSON.parse(_payload);
@@ -103,32 +111,12 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
     
             });
         });
-    
-        test('it should fail for already active user account', done => {
-            expect.assertions(2);
-    
-            fastify.jwt.sign({ account: 'info@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token };
-                try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
-                    const payload = JSON.parse(_payload);
-        
-                    expect(statusCode).toBe(400);
-                    expect(payload.code).toBe(errorTypes.ALREADY_ACTIVE);
-                    done();
-                } catch (error) {
-                    console.log(error);
-                    expect(error).toBeUndefined();            
-                }
-    
-            });
-        });
 
-        test('it should succeed for an existing, non active account', done => {
+        test('it should succeed for existing user email', done => {
             expect.assertions(2);
     
             fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token };
+                const body = { token, password: 'newPassword', confirmPassword: 'newPassword' };
                 try {
                     const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
                     const payload = JSON.parse(_payload);
@@ -144,5 +132,4 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
             });
         });
     });
-
 });

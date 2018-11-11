@@ -1,7 +1,7 @@
 const { encrypt } = require('node-password-encrypter');
 
 const { userRegistrationTemplate } = require('../../views/email');
-const { errorTypes } = require('../../services/errors');
+const { errorTypes } = require('../errors/schema');
 
 
 
@@ -72,7 +72,7 @@ const registrationSchema = {
         required: ['email', 'password', 'confirmPassword', 'privacyAccepted'],
         properties: {
             email: { type: 'string', format: 'email' },
-            password: { type: 'string' },
+            password: { type: 'string', transform: ['trim'] },
             confirmPassword: { const: { '$data': '1/password' } },
             privacyAccepted: { type: 'boolean', const: true, description: 'Explicit privacy consent' }
         },

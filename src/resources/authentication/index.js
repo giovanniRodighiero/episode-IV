@@ -3,6 +3,9 @@ const { registrationController, registrationSchema } = require('./registration')
 const { confirmRegistrationController, confirmRegistrationSchema } = require('./confirmRegistration');
 const { resendRegistrationEmailController, resendRegistrationEmailSchema } = require('./resendRegistrationEmail');
 const { passwordRecoverController, passwordRecoverSchema } = require('./passwordRecover');
+const { confirmPasswordRecoverController, confirmPasswordRecoverSchema } = require('./confirmPasswordRecover');
+
+
 
 function initAuthentication (fastify) {
 
@@ -25,6 +28,10 @@ function initAuthentication (fastify) {
     fastify.post('/api/v1/password-recover', {
         schema: passwordRecoverSchema
     }, passwordRecoverController);
+
+    fastify.post('/api/v1/confirm-password-recover', {
+        schema: confirmPasswordRecoverSchema
+    }, confirmPasswordRecoverController);
 
 };
 
