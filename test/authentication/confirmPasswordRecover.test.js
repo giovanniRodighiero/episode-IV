@@ -1,6 +1,6 @@
-const buildFastify = require('../server');
-const { errorTypes } = require('../src/resources/errors/schema');
-const { seedUsers } = require('../src/resources/users/seed');
+const buildFastify = require('../../server');
+const { errorTypes } = require('../../src/resources/errors/schema');
+const { seedUsers } = require('../../src/resources/users/seed');
 
 
 const requestsDetails = {

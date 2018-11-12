@@ -56,7 +56,7 @@ const passwordRecoverController = async function (request, reply) {
 const passwordRecoverSchema = {
     summary: 'Send an email with the password recovery link',
     description: 'Send an email with the password recovery link for a confirmed user account.',
-    tags: ['Authorization'],
+    tags: ['Authentication'],
 
     body: {
         type: 'object',

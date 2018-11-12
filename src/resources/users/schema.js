@@ -5,7 +5,8 @@ const baseUserSchema = {
     properties: {
         email: { type: 'string', format: 'email' },
         role: { type: 'number' }
-    }
+    },
+    additionalProperties: false
 };
 
 module.exports = {

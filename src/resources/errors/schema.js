@@ -5,6 +5,7 @@ const errorTypes = {
     MISSING_PARAM: 'missing_param', // body param missing
     NOT_FOUND: 'not_found', // something not found in database
     NOT_AUTHORIZED: 'not_authorized', // account not authorized to do something
+    NOT_AUTHENTICATED: 'not_authenticated', // account not authenticated
 
     // specific errors
     WRONG_PASSWORD: 'wrong_password', // wrong password on login
