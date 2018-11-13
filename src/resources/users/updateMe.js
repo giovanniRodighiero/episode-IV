@@ -17,7 +17,7 @@ const updateMeController = async function (request, reply) {
 };
 
 const updateMeSchema = {
-    summary: 'Updates a user profile informations',
+    summary: 'Updates the user profile informations',
     description: 'Given a valid access token, updates the associated user profile informations',
     tags: ['Users'],
 

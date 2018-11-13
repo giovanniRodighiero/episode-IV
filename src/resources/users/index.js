@@ -1,6 +1,7 @@
 // MIDDLEWARES
 const secureAuth = require('../../middlewares/authentication');
 const secureConfirmedAccount = require('../../middlewares/confirmedAccount');
+const secureRole = require('../../middlewares/role');
 
 const { baseUserSchema } = require('./schema');
 const { ensureIndexes } = require('./collection');
@@ -9,6 +10,7 @@ const { ensureIndexes } = require('./collection');
 const { meController, meSchema } = require('./me');
 const { updateMeController, updateMeSchema } = require('./updateMe');
 const { updateMePasswordController, updateMePasswordSchema } = require('./updateMePassword');
+const { listController, listSchema } = require('./list');
 
 
 async function initUsers (fastify) {
@@ -19,6 +21,11 @@ async function initUsers (fastify) {
     // DATABSE MIGRATION (indexes and stuff)
     await ensureIndexes(fastify);
 
+
+    fastify.get('/api/v1/users', {
+        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(90)],
+        schema: listSchema
+    }, listController);
 
     fastify.get('/api/v1/users/me', {
         beforeHandler: secureAuth,

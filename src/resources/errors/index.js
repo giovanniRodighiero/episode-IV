@@ -5,9 +5,10 @@ function initErrors (fastify) {
 
     fastify.addSchema(baseErrorSchema);
 
-    fastify.setErrorHandler(async function (error, request, reply) {
+    fastify.setErrorHandler(async (error, request, reply) => {
         
         if (error.validation) {
+
             const [ validationError ] = error.validation;
     
             switch (validationError.keyword) {
@@ -17,6 +18,10 @@ function initErrors (fastify) {
                     break;
     
                 case 'format':
+                    return { code: errorTypes.VALIDATION_ERROR, fieldName: validationError.dataPath.split('.')[1] };
+                    break;
+
+                case 'minimum':
                     return { code: errorTypes.VALIDATION_ERROR, fieldName: validationError.dataPath.split('.')[1] };
                     break;
     

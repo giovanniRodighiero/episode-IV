@@ -4,7 +4,8 @@ const baseUserSchema = {
     required: ['email', 'role'],
     properties: {
         email: { type: 'string', format: 'email' },
-        role: { type: 'number' }
+        role: { type: 'number' },
+        accountConfirmed: { type: 'boolean' }
     },
     additionalProperties: false
 };
