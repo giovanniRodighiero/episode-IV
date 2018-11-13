@@ -1,12 +1,9 @@
 const { errorTypes } = require('../resources/errors/schema');
 
-const MALFORMED_JWT = 'JsonWebTokenError';
-const EXPIRED_JWT = 'TokenExpiredError';
-
-
 const profileProjection = {
     email: 1,
-    role: 1
+    role: 1,
+    accountConfirmed: 1
 };
 
 function notAuthorized (reply) {
