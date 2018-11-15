@@ -50,7 +50,7 @@ const listController = async function (request, reply) {
 };
 
 const listSchema = {
-    summary: 'Users list [ ROLE >= 90 ]',
+    summary: 'Users list [ ROLE >= 80 ]',
     description: 'List of all users with a role lower than the user requesting it',
     tags: ['Users'],
 
