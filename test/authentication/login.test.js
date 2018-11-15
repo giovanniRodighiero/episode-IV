@@ -110,6 +110,26 @@ describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () =
             }
         });
 
+        test('it should fail for non-active account', async () => {
+            expect.assertions(3);
+
+            const body = {
+                email: 'info+user@crispybacon.it',
+                password: 'password'
+            };
+
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const payload = JSON.parse(_payload);
+
+                expect(statusCode).toEqual(403);
+                expect(payload.code).not.toBeUndefined();
+                expect(payload.code).toEqual(errorTypes.NOT_CONFIRMED);
+            } catch (error) {
+                expect(error).toBeUndefined();
+            }
+        });
+
         test('it should succeed for correct email and password', async () => {
             expect.assertions(11);
 

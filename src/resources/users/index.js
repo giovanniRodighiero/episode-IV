@@ -11,6 +11,7 @@ const { meController, meSchema } = require('./me');
 const { updateMeController, updateMeSchema } = require('./updateMe');
 const { updateMePasswordController, updateMePasswordSchema } = require('./updateMePassword');
 const { listController, listSchema } = require('./list');
+const { creationController, creationSchema } = require('./creation');
 
 
 async function initUsers (fastify) {
@@ -21,9 +22,13 @@ async function initUsers (fastify) {
     // DATABSE MIGRATION (indexes and stuff)
     await ensureIndexes(fastify);
 
+    fastify.post('/api/v1/users', {
+        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        schema: creationSchema
+    }, creationController);
 
     fastify.get('/api/v1/users', {
-        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(90)],
+        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
         schema: listSchema
     }, listController);
 

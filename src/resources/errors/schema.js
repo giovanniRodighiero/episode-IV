@@ -11,7 +11,8 @@ const errorTypes = {
     WRONG_PASSWORD: 'wrong_password', // wrong password on login
     PASSWORD_MISMATCH: 'password_mismatch', // different password on registration
     ALREADY_EXISTING: 'already_existing', // record already existing for the privided info (cfr registration)
-    ALREADY_ACTIVE: 'already_active' // account already active (cfr  account confirmation)
+    ALREADY_ACTIVE: 'already_active', // account already active (cfr  account confirmation)
+    NOT_CONFIRMED: 'not_confirmed'
 };
 
 const availableErrorCodes = [];

@@ -8,10 +8,15 @@ const loginController = async function (request, reply) {
     const { email, password } = request.body;
 
     try {
-        const user = await Users.findOne({ email });
+        const user = await Users.findOne({ email }, { password: 1, email: 1, accountConfirmed: 1 });
         if (!user) {
             reply.code(404);
             return { code: errorTypes.NOT_FOUND };
+        }
+
+        if (!user.accountConfirmed) {
+            reply.code(403);
+            return { code: errorTypes.NOT_CONFIRMED };
         }
 
         const passwordsEqual = await compare({
