@@ -73,6 +73,15 @@ const creationSchema = {
     },
 
     response: {
+
+        200: {
+            type: 'object',
+            required: ['code'],
+            properties: {
+                code: { type: 'string' }
+            }
+        },
+
         400: 'baseError#',
 
         401: 'baseError#',

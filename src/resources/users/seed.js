@@ -24,6 +24,13 @@ const users = [
         privacyAccepted: true
     },
     {
+        email: 'info+userconfirmed@crispybacon.it',
+        password: 'password',
+        role: 70,
+        accountConfirmed: true,
+        privacyAccepted: true
+    },
+    {
         email: 'info+user@crispybacon.it',
         password: 'password',
         role: 70,
