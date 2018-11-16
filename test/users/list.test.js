@@ -111,12 +111,14 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
                 const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
                 const payload = JSON.parse(_payload);
 
+                const count = await fastify.mongo.db.collection('users').countDocuments({ role: { $lt: 100 } })
+                
                 expect(statusCode).toBe(200);
-                expect(payload.totalCount).toBe(1);
+                expect(payload.totalCount).toBe(count);
                 expect(payload.availablePages).toBe(1);
                 expect(payload.currentPage).toBe(1);
                 expect(payload.nextPage).toBeUndefined();
-                expect(payload.data).toHaveLength(1);
+                expect(payload.data).toHaveLength(count);
                 expect(payload.data[0].email).not.toBeUndefined();
                 expect(payload.data[0].role).not.toBeUndefined();
                 expect(payload.data[0].salt).toBeUndefined();

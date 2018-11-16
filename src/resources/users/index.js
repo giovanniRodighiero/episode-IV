@@ -12,6 +12,7 @@ const { updateMeController, updateMeSchema } = require('./updateMe');
 const { updateMePasswordController, updateMePasswordSchema } = require('./updateMePassword');
 const { listController, listSchema } = require('./list');
 const { creationController, creationSchema } = require('./creation');
+const { updateController, updateSchema } = require('./update');
 const { detailsController, detailsSchema } = require('./details');
 
 
@@ -52,6 +53,11 @@ async function initUsers (fastify) {
         beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
         schema: detailsSchema
     }, detailsController);
+
+    fastify.put('/api/v1/users/:id', {
+        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        schema: updateSchema
+    }, updateController);
 
     return true;
 };

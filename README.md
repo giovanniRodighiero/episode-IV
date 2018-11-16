@@ -28,6 +28,7 @@
 * Authorization middleware, based on user's role;
 * Registration flow with account confirmation through email;
 * Login API with token;
+* User's CRUD;
 
 ## Project structure
 * `index.js`: server entry point, the one to execute
