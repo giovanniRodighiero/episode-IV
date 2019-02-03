@@ -5,8 +5,17 @@ const updateMeController = async function (request, reply) {
 
     const { email, _id } = request.user;
     try {
+        // CHECK FOR ALREADY EXISTING EMAIL
+        if (request.body.email && request.body.email !== email) {
+            let user = await Users.findOne({ email: request.body.email }, { email: 1 });
+            if (user) {
+                reply.code(409);
+                return { code: errorTypes.ALREADY_EXISTING };
+            }
+        }
+
         await Users.updateOne({ email }, { $set: request.body });
-        const user = await Users.findOne({ _id }, { email: 1, role: 1 });
+        user = await Users.findOne({ _id }, { email: 1, role: 1 });
         reply.code(200);
         return { code: 'success', user };
     } catch (error) {
@@ -36,7 +45,9 @@ const updateMeSchema = {
                 code: { type: 'string' },
                 user: 'baseUser#'
             }
-        }
+        },
+
+        409: 'baseError#',
     }
 
 };

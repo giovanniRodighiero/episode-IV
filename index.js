@@ -1,7 +1,6 @@
 const bootServer = require('./server');
 
 
-
 const runServer = server => error => {
     if (error) {
         console.log(error);
@@ -25,8 +24,6 @@ bootServer()
                 server.listen(port, '0.0.0.0', runServer(server));
             else
                 server.listen(port, runServer(server));
-
         })
     )
     .catch(error => console.log(error));
-

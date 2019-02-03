@@ -3,6 +3,7 @@ const fastifyMongoDb = require('fastify-mongodb');
 const jwt = require('fastify-jwt');
 const fastifyNodeMailer = require('fastify-nodemailer');
 const fastifySwagger = require('fastify-swagger');
+const cors = require('fastify-cors');
 const Ajv = require('ajv');
 
 
@@ -36,6 +37,9 @@ async function buildFastify () {
 
     // INJECT CONFIG VARIABLES TO THE MAIN INSTANCE (fastify.config / this.config)
     fastify.decorate('config', allConfigs[process.env.NODE_ENV]);
+
+    // CORS HANDLING
+    fastify.register(cors);
 
     // JWT UTILITIES (fastify.jwt / this.jwt)
     fastify.register(jwt, { secret: fastify.config.jwtSecret });

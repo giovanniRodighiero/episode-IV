@@ -39,7 +39,7 @@ const loginController = async function (request, reply) {
                 role: user.role
             },
             {
-                expiresIn: '30 days'
+                expiresIn: '60 days'
             },
         (err, token) => {
             if (err) {

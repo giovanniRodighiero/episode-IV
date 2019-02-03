@@ -18,7 +18,8 @@ const userRoles = {
 const test = {
     port,
     database: {
-        url: `${databaseUrl}-test`
+        url: `${databaseUrl}-test`,
+        name: `${projectName}-test`
     },
     jwtSecret,
     userRoles,
@@ -40,7 +41,8 @@ const test = {
 const development = {
     port,
     database: {
-        url: `${databaseUrl}-development`
+        url: `${databaseUrl}-development`,
+        name: `${projectName}-development`
     },
     jwtSecret,
     userRoles,
@@ -62,7 +64,8 @@ const development = {
 const production = {
     port,
     database: {
-        url: `${databaseUrl}-production`
+        url: `${databaseUrl}-production`,
+        name: `${projectName}-production`
     },
     jwtSecret,
     userRoles

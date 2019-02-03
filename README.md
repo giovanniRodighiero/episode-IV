@@ -2,7 +2,6 @@
 
 ## TODO
 * Set up the default logger `Pino` and replace most of the `console.log`;
-* Users crud;
 * Check on all config required options before boot;
 * Swagger integration and config for existing API;
 

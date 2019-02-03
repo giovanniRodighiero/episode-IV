@@ -32,7 +32,7 @@ const updateMePasswordSchema = {
         required: ['password', 'confirmPassword'],
         properties: {
             password: { type: 'string', transform: ['trim'] },
-            confirmPassword: { const: { '$data': '1/password' } },
+            confirmPassword: { const: { '$data': '1/password' }, type: 'string' },
         },
         additionalProperties: false
     },
