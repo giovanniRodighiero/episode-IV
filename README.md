@@ -35,7 +35,7 @@
 * `config.js`: configuration variables and constants grouped by the app's environment of execution (test, dev, prod);
 * `src/resources/`: API resources, a folder for each one containing _schema_, _controller_, _database migration_, ecc...;
 * `src/services/`: misc services or utility functions;
-* `src/views/`: html templates, used in the emails for instance.
+* `src/emailTemplates/`: html templates, used in the emails for instance.
 
 
 ### Registration flow

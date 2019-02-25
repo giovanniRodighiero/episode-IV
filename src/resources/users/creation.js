@@ -1,5 +1,5 @@
 const { errorTypes } = require('../errors/schema');
-const { userRegistrationTemplate } = require('../../views/email');
+const { userRegistrationTemplate } = require('../../emailTemplates/email');
 
 
 const creationController = async function (request, reply) {

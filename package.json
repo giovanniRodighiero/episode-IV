@@ -10,6 +10,7 @@
     "license": "ISC",
     "dependencies": {
         "ajv-keywords": "^3.3.0",
+        "ejs": "^2.6.1",
         "fastify": "^1.13.4",
         "fastify-cors": "^0.2.0",
         "fastify-jwt": "^0.5.0",
@@ -17,7 +18,8 @@
         "fastify-nodemailer": "^1.5.0",
         "fastify-swagger": "^0.15.3",
         "handlebars": "^4.0.12",
-        "node-password-encrypter": "^1.0.0"
+        "node-password-encrypter": "^1.0.0",
+        "point-of-view": "^2.1.0"
     },
     "devDependencies": {
         "jest": "^23.6.0"

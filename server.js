@@ -5,6 +5,7 @@ const fastifyNodeMailer = require('fastify-nodemailer');
 const fastifySwagger = require('fastify-swagger');
 const cors = require('fastify-cors');
 const Ajv = require('ajv');
+const resolve = require('path').resolve;
 
 
 const allConfigs = require('./config');
@@ -31,6 +32,17 @@ require('ajv-keywords')(ajv, 'transform');
 
 // SERVER BOOT FUNCTION
 async function buildFastify () {
+    
+    // FRONTEND HTML TEMPLATES
+    fastify.register(require('point-of-view'), {
+        engine: {
+            ejs: require('ejs'),
+        },
+        templates: './src/views',
+        options: {
+            filename: resolve('./src/views')
+        }
+    });
 
     // SET CUSTOM AJV INSTANCE FOR SCHEMA COMPILATION
     fastify.setSchemaCompiler(schema => ajv.compile(schema));
