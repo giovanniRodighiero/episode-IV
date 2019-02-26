@@ -25,37 +25,37 @@ async function initUsers (fastify) {
     await ensureIndexes(fastify);
 
     fastify.post('/api/v1/users', {
-        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
         schema: creationSchema
     }, creationController);
 
     fastify.get('/api/v1/users', {
-        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
         schema: listSchema
     }, listController);
 
     fastify.get('/api/v1/users/me', {
-        beforeHandler: secureAuth,
+        preValidation: secureAuth,
         schema: meSchema
     }, meController);
 
     fastify.put('/api/v1/users/me/profile', {
-        beforeHandler: [secureAuth, secureConfirmedAccount],
+        preValidation: [secureAuth, secureConfirmedAccount],
         schema: updateMeSchema
     }, updateMeController);
 
     fastify.put('/api/v1/users/me/password', {
-        beforeHandler: [secureAuth, secureConfirmedAccount],
+        preValidation: [secureAuth, secureConfirmedAccount],
         schema: updateMePasswordSchema
     }, updateMePasswordController);
 
     fastify.get('/api/v1/users/:id', {
-        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
         schema: detailsSchema
     }, detailsController);
 
     fastify.put('/api/v1/users/:id', {
-        beforeHandler: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
         schema: updateSchema
     }, updateController);
 

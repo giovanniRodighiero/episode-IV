@@ -6,7 +6,7 @@ const MALFORMED_JWT = 'JsonWebTokenError';
 const EXPIRED_JWT = 'TokenExpiredError';
 
 const confirmPasswordRecoverController = function (request, reply) {
-    const { token, password, confirmPassword } = request.body;
+    const { token, password } = request.body;
 
     this.jwt.verify(token, async (err, decoded) => {
         // TOKEN MALFORMED OR EXPIRED
@@ -45,7 +45,7 @@ const confirmPasswordRecoverController = function (request, reply) {
         } catch (error) {
             console.log(error);
             reply.code(500);
-            reply.send(error);
+            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
         }
     });
 };

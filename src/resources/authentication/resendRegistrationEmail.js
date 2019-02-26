@@ -6,50 +6,44 @@ const resendRegistrationEmailController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
     const { email } = request.body;
 
-    try {
-        const user = await Users.findOne({ email });
-        if (!user) {
-            reply.code(404);
-            return { code: errorTypes.NOT_FOUND };
+    const user = await Users.findOne({ email });
+    if (!user) {
+        reply.code(404);
+        return { code: errorTypes.NOT_FOUND };
+    }
+
+    if (user.accountConfirmed) {
+        reply.code(403);
+        return { code: errorTypes.ALREADY_ACTIVE };
+    }
+
+    this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
+        if (err) {
+            console.log(err)
+            reply.code(500);
+            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
         }
 
-        if (user.accountConfirmed) {
-            reply.code(403);
-            return { code: errorTypes.ALREADY_ACTIVE };
-        }
-
-        this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
+        this.nodemailer.sendMail({
+            from: this.config.mailer.from,
+            to: email,
+            subject: 'Successful registration',
+            html: userRegistrationTemplate({
+                htmlTitle: 'Registration',
+                activationLink: this.config.address + '/api/v1/confirmation/' + token
+            })
+        }, (err, info) => {
             if (err) {
                 console.log(err)
                 reply.code(500);
                 reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
             }
 
-            this.nodemailer.sendMail({
-                from: this.config.mailer.from,
-                to: email,
-                subject: 'Successful registration',
-                html: userRegistrationTemplate({
-                    htmlTitle: 'Registration',
-                    activationLink: this.config.address + '/api/v1/confirmation/' + token
-                })
-            }, (err, info) => {
-                if (err) {
-                    console.log(err)
-                    reply.code(500);
-                    reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-                }
-
-                reply.code(200);
-                reply.send({ code: 'success' });
-            });
-
+            reply.code(200);
+            reply.send({ code: 'success' });
         });
-    } catch (error) {
-        console.log(error);
-        reply.code(500);
-        return { code: errorTypes.INTERNAL_SERVER_ERROR };
-    }
+
+    });
 };
 
 const resendRegistrationEmailSchema = {

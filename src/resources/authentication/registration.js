@@ -9,56 +9,48 @@ const registrationController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
     const { email, password } = request.body;
 
-    try {
-        const user = await Users.findOne({ email });
-        if (user) {
-            reply.code(409);
-            return { code: errorTypes.ALREADY_EXISTING };
+    const user = await Users.findOne({ email });
+    if (user) {
+        reply.code(409);
+        return { code: errorTypes.ALREADY_EXISTING };
+    }
+
+    const { salt, encryptedContent } = await encrypt({ content: password, keylen: 128, iterations: 1000 });
+    await Users.insertOne({
+        email,
+        password: encryptedContent,
+        salt,
+        role: this.config.userRoles.USER,
+        accountConfirmed: false,
+        privacyAccepted: true
+    });
+
+    this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
+        if (err) {
+            console.log(err)
+            reply.code(500);
+            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
         }
 
-        const { salt, encryptedContent } = await encrypt({ content: password, keylen: 128, iterations: 1000 });
-        await Users.insertOne({
-            email,
-            password: encryptedContent,
-            salt,
-            role: this.config.userRoles.USER,
-            accountConfirmed: false,
-            privacyAccepted: true
-        });
-
-        this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
+        this.nodemailer.sendMail({
+            from: this.config.mailer.from,
+            to: email,
+            subject: 'Successful registration',
+            html: userRegistrationTemplate({
+                htmlTitle: 'Registration',
+                activationLink: this.config.address + '/api/v1/confirmation/' + token
+            })
+        }, (err, info) => {
             if (err) {
                 console.log(err)
                 reply.code(500);
                 reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
             }
 
-            this.nodemailer.sendMail({
-                from: this.config.mailer.from,
-                to: email,
-                subject: 'Successful registration',
-                html: userRegistrationTemplate({
-                    htmlTitle: 'Registration',
-                    activationLink: this.config.address + '/api/v1/confirmation/' + token
-                })
-            }, (err, info) => {
-                if (err) {
-                    console.log(err)
-                    reply.code(500);
-                    reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-                }
-    
-                reply.code(201);
-                reply.send({ code: 'success' });
-            });
-        }); 
-
-        
-    } catch (error) {
-        console.log(error);
-        reply.code(500);
-        return { code: errorTypes.INTERNAL_SERVER_ERROR };
-    }
+            reply.code(201);
+            reply.send({ code: 'success' });
+        });
+    });
 };
 
 const registrationSchema = {
