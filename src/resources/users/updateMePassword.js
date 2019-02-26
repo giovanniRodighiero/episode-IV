@@ -1,9 +1,5 @@
 const { encrypt } = require('node-password-encrypter');
 
-const { errorTypes } = require('../errors/schema');
-
-
-
 const updateMePasswordController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
     const { password } = request.body;

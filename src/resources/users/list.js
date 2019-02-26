@@ -1,6 +1,3 @@
-const { errorTypes } = require('../errors/schema');
-
-
 const PER_PAGE = 20;
 const userProjection = {
     email: 1,
