@@ -1,6 +1,3 @@
-const { errorTypes } = require('../errors/schema');
-
-
 const PER_PAGE = 20;
 const userProjection = {
     email: 1,
@@ -14,39 +11,33 @@ const listController = async function (request, reply) {
     // PAGINATION OPTIONS
     const { perPage = PER_PAGE , page = 1 } = request.query;
 
-    try {
-        const [ totalCount, data ] = await Promise.all([
-            Users.countDocuments({ role: { $lt: request.user.role } }),
-            Users
-                .find({ role: { $lt: request.user.role } })
-                .skip((page - 1) * perPage)
-                .limit(perPage)
-                .project(userProjection)
-                .toArray(),
-        ]);
+    const [ totalCount, data ] = await Promise.all([
+        Users.countDocuments({ role: { $lt: request.user.role } }),
+        Users
+            .find({ role: { $lt: request.user.role } })
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+            .project(userProjection)
+            .toArray(),
+    ]);
 
-        const response = {
-            totalCount,
-            currentPage: page,
-            data
-        };
+    const response = {
+        totalCount,
+        currentPage: page,
+        data
+    };
 
-        // PAGINATION CALCS ...
-        let availablePages = Math.floor(totalCount / perPage);
-        if (totalCount % perPage !== 0)
-            availablePages = availablePages + 1;
-        response['availablePages'] = availablePages;
+    // PAGINATION CALCS ...
+    let availablePages = Math.floor(totalCount / perPage);
+    if (totalCount % perPage !== 0)
+        availablePages = availablePages + 1;
+    response['availablePages'] = availablePages;
 
-        if (page < availablePages)
-            response.nextPage = page + 1;
-        
-        reply.code(200);
-        return response;
-    } catch (error) {
-        console.log(error);        
-        reply.code(500);
-        return { code: errorTypes.INTERNAL_SERVER_ERROR };
-    }
+    if (page < availablePages)
+        response.nextPage = page + 1;
+    
+    reply.code(200);
+    return response;
 };
 
 const listSchema = {

@@ -49,7 +49,6 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         try {
             const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
             const payload = JSON.parse(_payload);
-
             expect(statusCode).toBe(400);
             expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
         } catch (error) {

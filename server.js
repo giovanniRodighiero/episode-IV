@@ -9,26 +9,26 @@ const resolve = require('path').resolve;
 
 
 const allConfigs = require('./config');
+const swaggerConfig = require('./src/services/swagger');
 
 const initRoutes = require('./src/resources');
-const swaggerConfig = require('./src/services/swagger');
 
 
 // SET UP CORRECT ENV VARIABLE WITH DEFAULT
 if (!process.env.NODE_ENV || !['test', 'development', 'production'].includes(process.env.NODE_ENV))
-    process.env.NODE_ENV = 'development';
+process.env.NODE_ENV = 'development';
 console.log('NODE_ENV set to ', process.env.NODE_ENV);
 
 
+// SETUP AJV KEYWORDS
 const ajv = new Ajv({
     removeAdditional: true,
     useDefaults: true,
     coerceTypes: true,
     $data: true
 });
-
-// SETUP AJV KEYWORDS
 require('ajv-keywords')(ajv, 'transform');
+
 
 // SERVER BOOT FUNCTION
 async function buildFastify () {
@@ -62,7 +62,7 @@ async function buildFastify () {
     // DOCUMENTATION PLUGIN
     fastify.register(fastifySwagger, swaggerConfig);
 
-    // DATABASE CONNECTION (fastify.mongo / this.mongo => db, ObjectId, client)
+    // DATABASE CONNECTION (fastify.mongo / this.mongo = { db, ObjectId, client })
     fastify.register(fastifyMongoDb, {
         useNewUrlParser: true,
         forceClose: true,      

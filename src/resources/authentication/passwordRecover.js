@@ -5,52 +5,47 @@ const passwordRecoverController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
     const { email } = request.body;
 
-    try {
-        const user = await Users.findOne({ email });
-        // USER NOT FOUND
-        if (!user) {
-            reply.code(404);
-            return { code: errorTypes.NOT_FOUND };
+    const user = await Users.findOne({ email });
+    // USER NOT FOUND
+    if (!user) {
+        reply.code(404);
+        return { code: errorTypes.NOT_FOUND };
+    }
+
+    // USER ACCOUNT NOT CONFIRMED
+    if (!user.accountConfirmed) {
+        reply.code(403);
+        return { code: errorTypes.NOT_AUTHORIZED };
+    }
+
+    this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
+        if (err) {
+            console.log(err)
+            reply.code(500);
+            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
         }
 
-        // USER ACCOUNT NOT CONFIRMED
-        if (!user.accountConfirmed) {
-            reply.code(403);
-            return { code: errorTypes.NOT_AUTHORIZED };
-        }
-
-        this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
+        this.nodemailer.sendMail({
+            from: this.config.mailer.from,
+            to: email,
+            subject: 'Password recovery',
+            html: userRegistrationTemplate({
+                htmlTitle: 'Password Recovery',
+                activationLink: this.config.address + '/api/v1/recovery/' + token
+            })
+        }, (err, info) => {
             if (err) {
                 console.log(err)
                 reply.code(500);
                 reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
             }
 
-            this.nodemailer.sendMail({
-                from: this.config.mailer.from,
-                to: email,
-                subject: 'Password recovery',
-                html: userRegistrationTemplate({
-                    htmlTitle: 'Password Recovery',
-                    activationLink: this.config.address + '/api/v1/recovery/' + token
-                })
-            }, (err, info) => {
-                if (err) {
-                    console.log(err)
-                    reply.code(500);
-                    reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-                }
-    
-                reply.code(200);
-                reply.send({ code: 'success' });
-            });
-        }); 
+            reply.code(200);
+            reply.send({ code: 'success' });
+        });
+    }); 
 
-    } catch (error) {
-        console.log(error);
-        reply.code(500);
-        return { code: errorTypes.INTERNAL_SERVER_ERROR };
-    }
+
 };
 
 const passwordRecoverSchema = {

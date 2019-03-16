@@ -17,24 +17,18 @@ const updateController = async function (request, reply) {
 
     const _id = new this.mongo.ObjectId(request.params.id);
 
-    try {
-        // CHECK FOR NON EXISTING USER
-        const user = await Users.findOne({ _id }, {});
-        if (!user) {
-            reply.code(404);
-            return { code: errorTypes.NOT_FOUND };
-        }
-
-        await Users.updateOne({ _id }, { $set: request.body });
-        const newUser = await Users.fineOne({ _id }, userProjection);
-        reply.code(200);
-        return { code: 'success', data: newUser };
-
-    } catch (error) {
-        console.log(error);
-        reply.code(500);
-        return { code: errorTypes.INTERNAL_SERVER_ERROR };        
+    // CHECK FOR NON EXISTING USER
+    const user = await Users.findOne({ _id }, {});
+    if (!user) {
+        reply.code(404);
+        return { code: errorTypes.NOT_FOUND };
     }
+
+    await Users.updateOne({ _id }, { $set: request.body });
+    const newUser = await Users.fineOne({ _id }, userProjection);
+    reply.code(200);
+    return { code: 'success', data: newUser };
+
 };
 
 const updateSchema = {

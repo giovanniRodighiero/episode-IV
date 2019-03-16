@@ -20,28 +20,32 @@ const confirmRegistrationController = function (request, reply) {
 
         const Users = this.mongo.db.collection('users');
 
-        const { account: email } = decoded;
-        const user = await Users.findOne({ email });
-        // WRONG EMAIL
-        if (!user) {
-            reply.code(404);
-            reply.send({ code: errorTypes.NOT_FOUND });
-        } else {
-            // ACCOUNT ALREADY ACTIVE
-            if (user.accountConfirmed) {
-                reply.code(400);
-                reply.send({ code: errorTypes.ALREADY_ACTIVE });
+        try {
+            const { account: email } = decoded;
+            const user = await Users.findOne({ email });
+            // WRONG EMAIL
+            if (!user) {
+                reply.code(404);
+                reply.send({ code: errorTypes.NOT_FOUND });
             } else {
-                // ALL FINE
-                await Users.updateOne({ email }, { $set: { accountConfirmed: true }});
-                reply.code(200);
-                reply.send({ code: 'success' });
+                // ACCOUNT ALREADY ACTIVE
+                if (user.accountConfirmed) {
+                    reply.code(400);
+                    reply.send({ code: errorTypes.ALREADY_ACTIVE });
+                } else {
+                    // ALL FINE
+                    await Users.updateOne({ email }, { $set: { accountConfirmed: true }});
+                    reply.code(200);
+                    reply.send({ code: 'success' });
+                }
             }
+        } catch (error) {
+            console.log(error);
+            reply.code(500);
+            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
         }
     });
-    
-    reply.code(200);
-    return { code: 'success' };
+
 };
 
 const confirmRegistrationSchema = {

@@ -1,25 +1,16 @@
 const { encrypt } = require('node-password-encrypter');
 
-const { errorTypes } = require('../errors/schema');
-
-
-
 const updateMePasswordController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
     const { password } = request.body;
     const { _id } = request.user;
 
-    try {
-        const { salt, encryptedContent } = await encrypt({ content: password, keylen: 128, iterations: 1000 });
-        await Users.updateOne({ _id }, { $set: { salt, password: encryptedContent } });
-        
-        reply.code(200);
-        return { code: 'success' };
-    } catch (error) {
-        console.log(error);
-        reply.code(500);
-        return { code: errorTypes.INTERNAL_SERVER_ERROR };
-    }
+    const { salt, encryptedContent } = await encrypt({ content: password, keylen: 128, iterations: 1000 });
+    await Users.updateOne({ _id }, { $set: { salt, password: encryptedContent } });
+    
+    reply.code(200);
+    return { code: 'success' };
+
 };
 
 const updateMePasswordSchema = {

@@ -41,7 +41,9 @@ function initErrors (fastify) {
             }
         }
 
-        return error;
+        console.log(error)
+        reply.code(500);
+        return { code: errorTypes.INTERNAL_SERVER_ERROR }; 
 
     });
 

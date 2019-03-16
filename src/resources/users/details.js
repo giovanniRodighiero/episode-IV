@@ -17,22 +17,16 @@ const detailsController = async function (request, reply) {
     }
 
     const _id = new this.mongo.ObjectId(id);
-    try {
-        const user = await Users.findOne({ _id }, userProjection);
-        // CHECK FOR EXISTING USER
-        if (!user) {
-            reply.code(404);
-            return { code: errorTypes.NOT_FOUND };
-        }
-
-        reply.code(200);
-        return user;
-
-    } catch (error) {
-        console.log(error);
-        reply.code(500);
-        return { code: errorTypes.INTERNAL_SERVER_ERROR };
+    const user = await Users.findOne({ _id }, userProjection);
+    
+    // CHECK FOR EXISTING USER
+    if (!user) {
+        reply.code(404);
+        return { code: errorTypes.NOT_FOUND };
     }
+
+    reply.code(200);
+    return user;
 };
 
 const detailsSchema = {
