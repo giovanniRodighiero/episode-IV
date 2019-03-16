@@ -12,8 +12,9 @@ const config = {
         consumes: ['application/json'],
         produces: ['application/json'],
         tags: [
-            { name: 'Authentication', description: 'Authentication flow APIs (registration, login, ecc...)' },
+            { name: 'Authentication', description: 'Authentication flow APIs (registration, login, ecc...).' },
             { name: 'Users', description: 'Users related API, personal profile and generic CRUD.' },
+            { name: 'Settings', description: 'General website settings CRUD.' },
             // { name: 'protected', description: 'Protected API, need a valid access token' }
         ]
     }

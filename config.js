@@ -16,6 +16,7 @@ const userRoles = {
 
 // TEST CONFIG
 const test = {
+    projectName,
     port,
     database: {
         url: `${databaseUrl}-test`,
@@ -39,6 +40,7 @@ const test = {
 
 // DEVELOPMENT CONFIG
 const development = {
+    projectName,
     port,
     database: {
         url: `${databaseUrl}-development`,
@@ -62,6 +64,7 @@ const development = {
 
 // PRODUCTION CONFIG
 const production = {
+    projectName,
     port,
     database: {
         url: `${databaseUrl}-production`,
