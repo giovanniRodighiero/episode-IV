@@ -11,7 +11,8 @@ const settings = projectName => ({
         twitterUrl: `${projectName} - twitter url`,
         twitterTitle: `${projectName} - twitter title`,
         twitterDescription: `${projectName} - twitter description`,
-    }
+    },
+    lang: 'it'
 });
 
 

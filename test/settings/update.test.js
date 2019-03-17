@@ -138,7 +138,8 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
                     twitterUrl: `${projectName} - twitter url`,
                     twitterTitle: `${projectName} - twitter title`,
                     twitterDescription: `${projectName} - twitter description`,
-                }
+                },
+                lang: 'en'
             };
 
             try {
@@ -148,6 +149,7 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
                 expect(statusCode).toBe(200);
                 expect(payload.meta).toBeInstanceOf(Object);
                 expect(payload.meta.title).toBe(`${projectName} - meta title`);
+                expect(payload.lang).toBe('en');
             } catch (error) {
                 console.log(error);
                 expect(error).toBeUndefined();

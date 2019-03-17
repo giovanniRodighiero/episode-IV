@@ -1,9 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= lang %>">
 <head>
+    <!-- COMMON TAGS -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title><%= meta.title %></title>
+    <!-- Search Engine -->
+    <meta name="description" content="<%= meta.description %>">
+    <meta name="image" content="image.png">
+    <!-- Schema.org for Google -->
+    <meta itemprop="name" content="<%= meta.title %>">
+    <meta itemprop="description" content="<%= meta.description %>">
+    <meta itemprop="image" content="image.png">
+    <!-- Open Graph general (Facebook, Pinterest & Google+) -->
+    <meta name="og:title" content="<%= meta.ogTitle %>">
+    <meta name="og:description" content="<%= meta.ogDescription %>">
+    <meta name="og:image" content="ogimage">
+    <meta name="og:url" content="<%= meta.ogUrl %>">
+    <meta name="og:site_name" content="<%= meta.ogTitle %>">
+    <meta name="og:locale" content="<%= lang %>">
+    <!-- <meta name="og:video" content="video"> -->
+    <meta name="og:type" content="website">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<%= meta.twitterTitle %>">
+    <meta name="twitter:description" content="<%= meta.twitterDescription %>">
 </head>
 <body>

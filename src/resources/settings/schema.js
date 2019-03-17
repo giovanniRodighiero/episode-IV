@@ -1,7 +1,7 @@
 const settingsSchema = {
     $id: 'settings',
     type: 'object',
-    required: ['meta'],
+    required: ['meta', 'lang'],
     properties: {
         meta: {
             type: 'object',
@@ -18,7 +18,8 @@ const settingsSchema = {
                 twitterTitle: { type: 'string', description: 'Twitter title' },
                 twitterDescription: { type: 'string', description: 'Twitter description' },
             }
-        }
+        },
+        lang: { type: 'string', default: 'it' },
     },
     additionalProperties: false
 };

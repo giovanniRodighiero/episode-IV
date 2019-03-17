@@ -81,7 +81,7 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
         });
 
         test('it should succeed for correct account role', async () => {
-            expect.assertions(4);
+            expect.assertions(5);
 
             requestsDetails.headers['Authorization'] = 'Bearer ' + token;
 
@@ -93,6 +93,7 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
                 expect(payload.meta).toBeInstanceOf(Object);
                 expect(payload.meta.title).not.toBeNull();
                 expect(payload.meta.description).not.toBeNull();
+                expect(payload.lang).toBeInstanceOf(String);
             } catch (error) {
                 console.log(error);
                 expect(error).toBeUndefined();
