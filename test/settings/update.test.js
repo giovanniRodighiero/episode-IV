@@ -6,14 +6,13 @@ const { seedSettings } = require('../../src/resources/settings/seed');
 const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImluZm9AY3Jpc3B5YmFjb24uaXQifQ.pihOQQp-7P1yWWxMs8GsrIkPV6p_JFzAwZhBo-GnISg';
 
 const requestsDetails = {
-    method: 'GET',
+    method: 'PUT',
     url: '/api/v1/settings',
     headers: { 'Content-Type': 'application/json' }
 };
 let fastify, token, tokenUser;
 
-
-describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.url}`, () => {
+describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.url}`, () => {
 
     beforeAll(async () => {
         fastify = await buildFastify();
@@ -24,9 +23,10 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
         expect.assertions(2);
         
         requestsDetails.headers['Authorization'] = 'Bearer ' + fakeToken;
+        const body = { foo: '' };
 
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(401);
@@ -60,15 +60,15 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
                             });
                 });            
         });
-        
 
         test('it should fail for too low account role', async () => {
             expect.assertions(2);
 
             requestsDetails.headers['Authorization'] = 'Bearer ' + tokenUser;
+            const body = { foo: '' };
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(403);
@@ -77,27 +77,83 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
                 console.log(error);
                 expect(error).toBeUndefined();
             }
-    
         });
 
-        test('it should succeed for correct account role', async () => {
-            expect.assertions(4);
+
+
+        test('it should fail for missing params (meta)', async () => {
+            expect.assertions(3);
 
             requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+            const body = {  };
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
                 const payload = JSON.parse(_payload);
-    
-                expect(statusCode).toBe(200);
-                expect(payload.meta).toBeInstanceOf(Object);
-                expect(payload.meta.title).not.toBeNull();
-                expect(payload.meta.description).not.toBeNull();
+
+                expect(statusCode).toBe(400);
+                expect(payload.code).toBe(errorTypes.MISSING_PARAM);
+                expect(payload.fieldName).toBe('meta');
             } catch (error) {
                 console.log(error);
                 expect(error).toBeUndefined();
             }
-        })
 
+        });
+
+
+        test('it should fail for missing params (meta.title)', async () => {
+            expect.assertions(3);
+
+            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+            const body = { meta: {} };
+
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const payload = JSON.parse(_payload);
+
+                expect(statusCode).toBe(400);
+                expect(payload.code).toBe(errorTypes.MISSING_PARAM);
+                expect(payload.fieldName).toBe('title');
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+        });
+
+        test('it should succeed for correct params and account permissions ', async () => {
+            expect.assertions(3);
+
+            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+            const projectName = 'new name'
+            const body = {
+                meta: {
+                    title: `${projectName} - meta title`,
+                    description: `${projectName} - meta description`,
+            
+                    ogUrl: `${projectName} - og url`,
+                    ogTitle: `${projectName} - og title`,
+                    ogDescription: `${projectName} - og description`,
+            
+                    twitterUrl: `${projectName} - twitter url`,
+                    twitterTitle: `${projectName} - twitter title`,
+                    twitterDescription: `${projectName} - twitter description`,
+                }
+            };
+
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const payload = JSON.parse(_payload);
+
+                expect(statusCode).toBe(200);
+                expect(payload.meta).toBeInstanceOf(Object);
+                expect(payload.meta.title).toBe(`${projectName} - meta title`);
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+        });
+    
     });
+
 });

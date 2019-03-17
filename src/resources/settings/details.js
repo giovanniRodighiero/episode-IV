@@ -8,8 +8,8 @@ const detailsController = async function (request, reply) {
 };
 
 const detailsSchema = {
-    summary: 'Returns a single user.',
-    description: 'Given the unique id of an existing user, it returns his profile.',
+    summary: 'Returns the general site\'s settings.',
+    description: 'Returns the general site\'s settings.',
     tags: ['Settings'],
 
     response: {
