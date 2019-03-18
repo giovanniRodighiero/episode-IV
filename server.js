@@ -5,7 +5,10 @@ const fastifyNodeMailer = require('fastify-nodemailer');
 const fastifySwagger = require('fastify-swagger');
 const cors = require('fastify-cors');
 const Ajv = require('ajv');
-const resolve = require('path').resolve;
+const path = require('path');
+const fastifyStatic = require('fastify-static');
+
+const resolve = path.resolve;
 
 
 const allConfigs = require('./config');
@@ -42,6 +45,12 @@ async function buildFastify () {
         options: {
             filename: resolve('./src/views')
         }
+    });
+
+    // PUBLIC FILE SERVING
+    fastify.register(fastifyStatic, {
+        root: path.join(__dirname, 'public'),
+        prefix: '/public/',
     });
 
     // SET CUSTOM AJV INSTANCE FOR SCHEMA COMPILATION
