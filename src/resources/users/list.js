@@ -1,9 +1,6 @@
 const PER_PAGE = 20;
-const userProjection = {
-    email: 1,
-    role: 1,
-    accountConfirmed: 1
-};
+
+const { baseProjection } = require('./collection');
 
 const listController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
@@ -17,7 +14,7 @@ const listController = async function (request, reply) {
             .find({ role: { $lt: request.user.role } })
             .skip((page - 1) * perPage)
             .limit(perPage)
-            .project(userProjection)
+            .project(baseProjection)
             .toArray(),
     ]);
 

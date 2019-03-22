@@ -1,10 +1,7 @@
 const { errorTypes } = require('../errors/schema');
 
-const userProjection = {
-    email: 1,
-    role: 1,
-    accountConfirmed: 1
-};
+const { baseProjection } = require('./collection');
+
 
 const detailsController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
@@ -17,7 +14,7 @@ const detailsController = async function (request, reply) {
     }
 
     const _id = new this.mongo.ObjectId(id);
-    const user = await Users.findOne({ _id }, userProjection);
+    const user = await Users.findOne({ _id }, baseProjection);
     
     // CHECK FOR EXISTING USER
     if (!user) {
