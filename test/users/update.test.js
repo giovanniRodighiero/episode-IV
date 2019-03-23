@@ -9,7 +9,7 @@ const requestsDetails = {
     url: '/api/v1/users/',
     headers: { 'Content-Type': 'application/json' }
 };
-let fastify, token, tokenUser, tokenUserConfirmed;
+let fastify, tokenSuperadmin, tokenAdmin, tokenUserConfirmed;
 
 describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:id;`, () => {
 
@@ -41,10 +41,10 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:i
         beforeAll(done => {
             const opts = { expiresIn: '2 day' };
             seedUsers(fastify.mongo.db).then( _ => {
-                fastify.jwt.sign({ email: 'info@crispybacon.it' }, opts, (err, accessToken) => {
-                    token = accessToken;
-                    fastify.jwt.sign({ email: 'info+user@crispybacon.it' }, opts, (err, accessToken) => {
-                        tokenUser = accessToken;
+                fastify.jwt.sign({ email: 'info+admin@crispybacon.it' }, opts, (err, accessToken) => {
+                    tokenSuperadmin = accessToken;
+                    fastify.jwt.sign({ email: 'info+localadmin@crispybacon.it' }, opts, (err, accessToken) => {
+                        tokenAdmin = accessToken;
                         fastify.jwt.sign({ email: 'info+userconfirmed@crispybacon.it' }, opts, (err, accessTokenConfirmed) => {
                             tokenUserConfirmed = accessTokenConfirmed;
                             done();
@@ -52,25 +52,6 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:i
                     });
                 });
             });
-        });
-
-        test('it should fail for non confirmed account', async () => {
-            expect.assertions(2);
-
-            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenUser;
-            const url = requestsDetails.url + 'userid'
-            const body = { email: 'newmail@mail.it' };
-            try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url, payload: body });
-                const payload = JSON.parse(_payload);
-    
-                expect(statusCode).toBe(403);
-                expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
-            } catch (error) {
-                console.log(error);
-                expect(error).toBeUndefined();
-            }
-    
         });
 
         test('it should fail for an account with a role too low (< 80)', async () => {
@@ -95,7 +76,7 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:i
         test('it should fail for an invalid mongo id', async () => {
             expect.assertions(2);
 
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenSuperadmin;
             const url = requestsDetails.url + 'userid';
             const body = { email: 'newmail@mail.it' };
             try {
@@ -114,7 +95,7 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:i
         test('it should fail for a non existing account', async () => {
             expect.assertions(2);
 
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenSuperadmin;
             const url = requestsDetails.url + "5beaec4f13b92abf84302f26";
             const body = { email: 'newmail@mail.it' };
             try {
@@ -129,6 +110,68 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:i
             }
     
         });
+
+        test('it should fail for same person id', async () => {
+            expect.assertions(2);
+
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenSuperadmin;
+            const { _id } = await fastify.mongo.db.collection('users').findOne({ email: 'info+admin@crispybacon.it' });
+            const url = requestsDetails.url + _id.toString();
+            const body = { email: 'newmail@mail.it' };
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url, payload: body });
+                const payload = JSON.parse(_payload);
+    
+                expect(statusCode).toBe(403);
+                expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+    
+        });
+
+        test('it should fail for id of a user with higher role', async () => {
+            expect.assertions(2);
+
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenAdmin;
+            const { _id } = await fastify.mongo.db.collection('users').findOne({ email: 'info+admin@crispybacon.it' });
+            const url = requestsDetails.url + _id.toString();
+            const body = { email: 'newmail@mail.it' };
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url, payload: body });
+                const payload = JSON.parse(_payload);
+    
+                expect(statusCode).toBe(403);
+                expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+    
+        });
+
+        test('it should fail updating a role higher than the user making the request', async () => {
+            expect.assertions(2);
+
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenAdmin;
+            const { _id } = await fastify.mongo.db.collection('users').findOne({ email: 'info+userconfirmed@crispybacon.it' });
+            const url = requestsDetails.url + _id.toString();
+            const body = { role: fastify.config.userRoles.SUPERADMIN };
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url, payload: body });
+                const payload = JSON.parse(_payload);
+    
+                expect(statusCode).toBe(400);
+                expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+    
+        });
+
+        //TODO: new mail already in user and correct update
 
     });
 });

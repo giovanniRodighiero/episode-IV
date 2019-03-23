@@ -22,6 +22,12 @@ const detailsController = async function (request, reply) {
         return { code: errorTypes.NOT_FOUND };
     }
 
+    // CHECK FOR HIGHER ROLE
+    if (user.role >= request.user.role) {
+        reply.code(403);
+        return { code: errorTypes.NOT_AUTHORIZED };
+    }
+
     reply.code(200);
     return user;
 };
@@ -37,6 +43,8 @@ const detailsSchema = {
 
     response: {
         400: 'baseError#',
+
+        403: 'baseError#',
 
         404: 'baseError#',
 

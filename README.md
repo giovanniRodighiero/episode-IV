@@ -28,6 +28,7 @@
 * Registration flow with account confirmation through email;
 * Login API with token;
 * User's CRUD;
+* Setting's CRUD;
 
 ## Project structure
 * `index.js`: server entry point, the one to execute
@@ -47,3 +48,21 @@
 6. A non confirmed user can login in, but he won't see most of the data/resources;
 7. A password recovery can be requested by a user with a confirmed account, using `/api/v1/password-recover`, which returns a recover token;
 8. The new password can be recovered/updated from `/api/v1/confirm-password-recover`, using the previous recover token.
+
+### Users
+Every user has a role that determines the his capabilities. The roles list can be found in the config file (`config.js` in the project root).
+* __Every__ operation except the personal profile information requires a confirmed account;
+* The __update__ operation, used to edit a user personal informations, can only be performed by _admins_ towards a profile that is not the same as the user making the request (there's a specific api for that) and that has a role lower than the user making the request. Also the new role (if it is provided) cannot be higher that the one of the user making the request;
+* The __delete__ operation, used to delete a user account, can only be performed by _admins_ towards a profile that is not the same as the user making the request (there's a specific api for that) and that has a role lower than the user making the request;
+* The __list__ operation, used to list all the users account, can only be performed by _admins_ and it shows only the users with a role that is lower than the role of the user making the request;
+* The __details__ operation, used to get a single user infos, can only be performed by _admins_ and it shows only the users with a role that is lower than the role of the user making the request;
+* The __creation__ operation, used to create a new account, can only be performed by _admins_ and it can only create account with a role lower than the one of the user making the request;
+* The __me__ operation returns the profile of the user making the request;
+* The __updateMe__ operation updates the personal informations of the user making the request;
+* The __updateMePassword__ operation updates the password of the user making the request;
+
+### Settings
+General website settings, can be use for multiple purposes
+* __Every__ operation can only be performed by a superadmin.
+* The __details__ operation returns all the saved settings data;
+* The __update__ operations edits and updates the settings data with the new one provided.
