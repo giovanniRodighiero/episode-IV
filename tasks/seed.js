@@ -15,7 +15,7 @@ MongoClient.connect(config.database.url, { useNewUrlParser: true }, async functi
     try {
         
         await seedUsers(db);
-        await seedSettings(db);
+        await seedSettings(db, config);
         client.close();
         
     } catch (error) {
