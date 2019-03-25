@@ -6,12 +6,13 @@ const listController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
 
     // PAGINATION OPTIONS
-    const { perPage = PER_PAGE , page = 1 } = request.query;
+    const { perPage = PER_PAGE , page, sort, sortDir } = request.query;
 
     const [ totalCount, data ] = await Promise.all([
         Users.countDocuments({ role: { $lt: request.user.role } }),
         Users
             .find({ role: { $lt: request.user.role } })
+            .sort({ [sort]: sortDir })
             .skip((page - 1) * perPage)
             .limit(perPage)
             .project(baseProjection)
@@ -53,6 +54,18 @@ const listSchema = {
             type: 'number',
             minimum: 1,
             description: 'Which page',
+            default: 1
+        },
+        sort: {
+            type: 'string',
+            enum: ['email', 'role', 'accountConfirmed'],
+            description: 'Sorting field',
+            default: 'email'
+        },
+        sortDir: {
+            type: 'number',
+            enum: [-1, 1],
+            description: 'Sorting direction',
             default: 1
         }
     },
