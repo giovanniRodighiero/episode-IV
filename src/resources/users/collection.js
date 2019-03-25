@@ -4,7 +4,11 @@ const indexes = [
     [ { accountConfirmed: 1 } ]
 ];
 
-
+const baseProjection = {
+    email: 1,
+    role: 1,
+    accountConfirmed: 1
+}
 
 // SET UP THE USERS COLLECTION
 async function ensureIndexes (fastify) {
@@ -23,5 +27,6 @@ async function ensureIndexes (fastify) {
 
 module.exports = {
     indexes,
-    ensureIndexes
+    ensureIndexes,
+    baseProjection
 };

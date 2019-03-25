@@ -14,9 +14,11 @@ const { listController, listSchema } = require('./list');
 const { creationController, creationSchema } = require('./creation');
 const { updateController, updateSchema } = require('./update');
 const { detailsController, detailsSchema } = require('./details');
-
+const { deleteController, deleteSchema } = require('./delete');
 
 async function initUsers (fastify) {
+
+    const { userRoles } = fastify.config;
 
     // LOADING SCHEMA
     fastify.addSchema(baseUserSchema);
@@ -25,12 +27,12 @@ async function initUsers (fastify) {
     await ensureIndexes(fastify);
 
     fastify.post('/api/v1/users', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
         schema: creationSchema
     }, creationController);
 
     fastify.get('/api/v1/users', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
         schema: listSchema
     }, listController);
 
@@ -50,14 +52,19 @@ async function initUsers (fastify) {
     }, updateMePasswordController);
 
     fastify.get('/api/v1/users/:id', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
         schema: detailsSchema
     }, detailsController);
 
     fastify.put('/api/v1/users/:id', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(80)],
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
         schema: updateSchema
     }, updateController);
+
+    fastify.delete('/api/v1/users/:id', {
+        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
+        schema: deleteSchema
+    }, deleteController);
 
     return true;
 };

@@ -31,12 +31,40 @@ const users = [
         privacyAccepted: true
     },
     {
-        email: 'info+user@crispybacon.it',
+        email: 'userfake1@crispybacon.it',
         password: 'password',
         role: 70,
         accountConfirmed: false,
         privacyAccepted: true
-    }
+    },
+    {
+        email: 'userfake2@crispybacon.it',
+        password: 'password',
+        role: 70,
+        accountConfirmed: false,
+        privacyAccepted: true
+    },
+    {
+        email: 'userfake3@crispybacon.it',
+        password: 'password',
+        role: 70,
+        accountConfirmed: false,
+        privacyAccepted: true
+    },
+    {
+        email: 'userfake4@crispybacon.it',
+        password: 'password',
+        role: 70,
+        accountConfirmed: false,
+        privacyAccepted: true
+    },
+    {
+        email: 'userfake5@crispybacon.it',
+        password: 'password',
+        role: 70,
+        accountConfirmed: false,
+        privacyAccepted: true
+    },
 ];
 
 

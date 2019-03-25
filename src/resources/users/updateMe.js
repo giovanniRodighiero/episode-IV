@@ -1,9 +1,10 @@
 const { errorTypes } = require('../errors/schema');
+const { baseProjection } = require('./collection');
 
 const updateMeController = async function (request, reply) {
     const Users = this.mongo.db.collection('users');
 
-    const { email, _id } = request.user;
+    const { email } = request.user;
 
     // CHECK FOR ALREADY EXISTING EMAIL
     if (request.body.email && request.body.email !== email) {
@@ -14,8 +15,11 @@ const updateMeController = async function (request, reply) {
         }
     }
 
-    await Users.updateOne({ email }, { $set: request.body });
-    user = await Users.findOne({ _id }, { email: 1, role: 1 });
+    const { value: user } = await Users.findOneAndUpdate(
+        { email },
+        { $set: request.body },
+        { project: baseProjection, returnOriginal: false }
+    );
     reply.code(200);
     return { code: 'success', user };
 

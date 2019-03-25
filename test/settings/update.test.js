@@ -81,7 +81,11 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
 
 
 
+<<<<<<< HEAD
         test('it should fail for missing params (meta)', async () => {
+=======
+        test('it should fail for missing params (defaultLang)', async () => {
+>>>>>>> develop
             expect.assertions(3);
 
             requestsDetails.headers['Authorization'] = 'Bearer ' + token;
@@ -93,7 +97,11 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
 
                 expect(statusCode).toBe(400);
                 expect(payload.code).toBe(errorTypes.MISSING_PARAM);
+<<<<<<< HEAD
                 expect(payload.fieldName).toBe('meta');
+=======
+                expect(payload.fieldName).toBe('defaultLang');
+>>>>>>> develop
             } catch (error) {
                 console.log(error);
                 expect(error).toBeUndefined();
@@ -101,6 +109,7 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
 
         });
 
+<<<<<<< HEAD
 
         test('it should fail for missing params (meta.title)', async () => {
             expect.assertions(3);
@@ -121,10 +130,13 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
             }
         });
 
+=======
+>>>>>>> develop
         test('it should succeed for correct params and account permissions ', async () => {
             expect.assertions(3);
 
             requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+<<<<<<< HEAD
             const projectName = 'new name'
             const body = {
                 meta: {
@@ -140,6 +152,10 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
                     twitterDescription: `${projectName} - twitter description`,
                 },
                 lang: 'en'
+=======
+            const body = {
+                defaultLang: 'en'
+>>>>>>> develop
             };
 
             try {
@@ -147,9 +163,14 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(200);
+<<<<<<< HEAD
                 expect(payload.meta).toBeInstanceOf(Object);
                 expect(payload.meta.title).toBe(`${projectName} - meta title`);
                 expect(payload.lang).toBe('en');
+=======
+                expect(typeof payload.defaultLang).toBe('string');
+                expect(payload.defaultLang).toBe('en');
+>>>>>>> develop
             } catch (error) {
                 console.log(error);
                 expect(error).toBeUndefined();
