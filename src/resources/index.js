@@ -8,10 +8,10 @@ const initHomepage = require('./homepage');
 async function initResources (fastify) {
     
     initErrors(fastify);
+    initSettings(fastify);
     await initUsers(fastify);
     initAuthentication(fastify);
     initHomepage(fastify);
-    initSettings(fastify);
 
     return true;
 };
