@@ -15,6 +15,7 @@ const { creationController, creationSchema } = require('./creation');
 const { updateController, updateSchema } = require('./update');
 const { detailsController, detailsSchema } = require('./details');
 const { deleteController, deleteSchema } = require('./delete');
+const { invalidateTokensController, invalidateTokensSchema } = require('./invalidateTokens');
 
 async function initUsers (fastify) {
 
@@ -27,12 +28,12 @@ async function initUsers (fastify) {
     await ensureIndexes(fastify);
 
     fastify.post('/api/v1/users', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
+        preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN) ],
         schema: creationSchema
     }, creationController);
 
     fastify.get('/api/v1/users', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
+        preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN) ],
         schema: listSchema
     }, listController);
 
@@ -42,7 +43,7 @@ async function initUsers (fastify) {
     }, meController);
 
     fastify.put('/api/v1/users/me/profile', {
-        preValidation: [secureAuth, secureConfirmedAccount],
+        preValidation: [ secureAuth, secureConfirmedAccount ],
         schema: updateMeSchema
     }, updateMeController);
 
@@ -52,19 +53,24 @@ async function initUsers (fastify) {
     }, updateMePasswordController);
 
     fastify.get('/api/v1/users/:id', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
+        preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN) ],
         schema: detailsSchema
     }, detailsController);
 
     fastify.put('/api/v1/users/:id', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
+        preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN) ],
         schema: updateSchema
     }, updateController);
 
     fastify.delete('/api/v1/users/:id', {
-        preValidation: [secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN)],
+        preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN) ],
         schema: deleteSchema
     }, deleteController);
+
+    fastify.post('/api/v1/users/auth-tokens', {
+        preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.SUPERADMIN) ],
+        schema: invalidateTokensSchema
+    }, invalidateTokensController);
 
     return true;
 };
