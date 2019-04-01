@@ -52,10 +52,10 @@ const loginController = async function (request, reply) {
 };
 
 const loginSchema = {
-
+    
+    summary: 'Users login',
     description: 'Used to obtain an authentication token, which allows to perform successful requests to protected APIs',
     tags: ['Authentication'],
-    summary: 'Users login',
 
     body: {
         type: 'object',

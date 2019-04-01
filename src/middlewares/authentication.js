@@ -3,7 +3,8 @@ const { errorTypes } = require('../resources/errors/schema');
 const profileProjection = {
     email: 1,
     role: 1,
-    accountConfirmed: 1
+    accountConfirmed: 1,
+    tokenMinValidity: 1
 };
 
 function notAuthorized (reply) {
@@ -29,16 +30,24 @@ const authenticationMiddleware = function (request, reply, next) {
         // TOKEN MALFORMED OR EXPIRED
         if (err)
             return notAuthorized(reply);
-
+        
         const Users = this.mongo.db.collection('users');
-        const { email } = decoded;
+        const { email, iat } = decoded;
+
         try {
             const user = await Users.findOne({ email }, profileProjection);
+
+            // CHECK FOR USER EXISTENCE
             if (!user)
+                return notAuthorized(reply);
+
+            // CHECK FOR BLACKLISTED TOKEN
+            if (!!user.tokenMinValidity && (iat * 1000) < user.tokenMinValidity)
                 return notAuthorized(reply);
             
             // ALL FINE, FORWARD USER PROFILE
             request.user = user;
+
             next();
         } catch (error) {
             console.log(error)
