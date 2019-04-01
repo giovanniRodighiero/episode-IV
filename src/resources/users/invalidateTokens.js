@@ -6,10 +6,14 @@ const invalidateTokensController = async function (request, reply) {
     const { ObjectId } = this.mongo;
     const { users } = request.body;
 
-    let ids = [];
+    const ids = [];
 
     try {
-        ids = users.map( user => new ObjectId(user) );
+        users.forEach( user => {
+            // AVOIDING AUTO-LOGOUT :)
+            if (request.user._id.toString() !== user)
+                ids.push(new ObjectId(user));
+        });
     } catch (error) {
         reply.code(400);
         return { code: errorTypes.VALIDATION_ERROR, fieldName: 'users' };
@@ -23,7 +27,7 @@ const invalidateTokensController = async function (request, reply) {
 
 const invalidateTokensSchema = {
     summary: 'Invalidates a specific or a list of access tokens',
-    description: 'Given a list of valid user ids, it invalidates all the access token issued before the moment of execution.',
+    description: 'Given a list of valid user ids, it invalidates all the access token issued before the moment of execution. In case of the id of the person making the request, the id is ignored.',
     tags: ['Users'],
 
     body: {

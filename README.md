@@ -4,8 +4,6 @@
 * Set up the default logger `Pino` and replace most of the `console.log`;
 * Check on all config required options before boot;
 * Swagger integration and config for existing API;
-* Implement correct logic to prevent requests with token issued before a certain time;
-* Implement logout with token invalidation
 
 ## Requirements
 * Raccomended Node.js `>= 9.11.x`, but should work with `>= 8.6.x`;

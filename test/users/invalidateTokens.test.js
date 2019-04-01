@@ -142,9 +142,38 @@ describe(`USER TOKEN BLACKLIST testing ${requestsDetails.method} ${requestsDetai
                 expect(statusCode).toBe(200);
                 const users = await fastify.mongo.db.collection('users').find({ email: { $in: emails } }).toArray();
                 for (const user of users) {
-                    console.log(Date.now() - user.tokenMinValidity)
                     expect(user.tokenMinValidity).not.toBeUndefined();
                     expect(Date.now() - user.tokenMinValidity).toBeLessThan(100);
+                } 
+
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+        });
+
+        test('it should succed for correct params, ignoring the personal token when provided', async () => {
+            expect.assertions(6);
+
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenSuperadmin;
+            const emails = ['info+admin@crispybacon.it', 'userfake2@crispybacon.it', 'userfake3@crispybacon.it'];
+            const results = await fastify.mongo.db.collection('users').find({ email: { $in: emails } }).toArray();
+            const users = results.map( user => user._id.toString());
+            const body = { users };
+
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                // const payload = JSON.parse(_payload);
+
+                expect(statusCode).toBe(200);
+                const users = await fastify.mongo.db.collection('users').find({ email: { $in: emails } }).toArray();
+                for (const user of users) {
+                    if (user.email === 'info+admin@crispybacon.it') {
+                        expect(user.tokenMinValidity).toBeUndefined();
+                    } else {
+                        expect(user.tokenMinValidity).not.toBeUndefined();
+                        expect(Date.now() - user.tokenMinValidity).toBeLessThan(100);
+                    }
                 } 
 
             } catch (error) {
