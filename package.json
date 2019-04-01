@@ -4,7 +4,8 @@
     "description": "Basic project for an API service with mongodb",
     "main": "index.js",
     "scripts": {
-        "test": "NODE_ENV=test jest --runInBand --detectOpenHandles --verbose"
+        "test": "NODE_ENV=test jest --runInBand --detectOpenHandles --verbose",
+        "dev": "NODE_ENV=development node ."
     },
     "author": "Giovanni Rodighiero",
     "license": "ISC",

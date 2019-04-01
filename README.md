@@ -11,15 +11,18 @@
 
 ## Useful links
 * [Fastify docs](https://www.fastify.io/)
-* [Node.js official MongoDb driver](http://mongodb.github.io/node-mongodb-native/3.1/)
+* [Node.js official MongoDB driver](http://mongodb.github.io/node-mongodb-native/3.1/)
+* [Jest testing framework](https://jestjs.io/)
 
 ## Installation
 * Download source code, `git clone` it's fine;
 * Delete `.git` if cloned;
 * Install dependencies with `npm install`;
 * Overwrite the base configuration inside `./config.js`;
-* Add and overwrite any code you need to.
-* Run with `node index.js`.
+* Add and overwrite any code you need to;
+* Run with `npm run dev`;
+* Docs available @ `localhost:\[port\]/documentations`;
+* Test can be run with `npm run test`;
 
 ## What's included
 * `MongoDB` connection to env-based database;
