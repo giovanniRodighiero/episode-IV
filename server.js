@@ -7,6 +7,7 @@ const cors = require('fastify-cors');
 const Ajv = require('ajv');
 const path = require('path');
 const fastifyStatic = require('fastify-static');
+const multipart = require('fastify-multipart');
 
 const resolve = path.resolve;
 
@@ -35,6 +36,9 @@ require('ajv-keywords')(ajv, 'transform');
 
 // SERVER BOOT FUNCTION
 async function buildFastify () {
+
+    // MULTIPART TO HANDLE FILE UPLOAD
+    fastify.register(multipart);
     
     // FRONTEND HTML TEMPLATES
     fastify.register(require('point-of-view'), {

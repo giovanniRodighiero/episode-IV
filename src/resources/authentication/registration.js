@@ -1,6 +1,6 @@
 const { encrypt } = require('node-password-encrypter');
 
-const { userRegistrationTemplate } = require('../../emailTemplates/email');
+const { userRegistrationTemplate } = require('../../emailTemplates');
 const { errorTypes } = require('../errors/schema');
 
 

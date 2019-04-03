@@ -6,7 +6,7 @@
 * Swagger integration and config for existing API;
 
 ## Requirements
-* Raccomended Node.js `>= 9.11.x`, but should work with `>= 8.6.x`;
+* Raccomended Node.js `>= 10.15.3 (LTS at the time)`;
 * MongoDB `>= 3.6`;
 
 ## Useful links
@@ -67,3 +67,7 @@ General website settings, can be use for multiple purposes
 * __Every__ operation can only be performed by a superadmin.
 * The __details__ operation returns all the saved settings data;
 * The __update__ operations edits and updates the settings data with the new one provided.
+
+### Uploader
+Files uploader API
+* The __uploader__ api is used to upload images and optimize them in .webp format.

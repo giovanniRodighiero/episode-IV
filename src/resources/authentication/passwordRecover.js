@@ -1,4 +1,4 @@
-const { userRegistrationTemplate } = require('../../emailTemplates/email');
+const { userRegistrationTemplate } = require('../../emailTemplates');
 const { errorTypes } = require('../errors/schema');
 
 const passwordRecoverController = async function (request, reply) {

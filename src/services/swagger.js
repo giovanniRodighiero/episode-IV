@@ -16,6 +16,7 @@ const config = {
             { name: 'Users', description: 'Users related API, personal profile and generic CRUD.' },
             { name: 'Settings', description: 'General website settings CRUD.' },
             { name: 'Pages', description: 'Root pages read and update' },
+            { name: 'Uploader', description: 'Files upload' },
             // { name: 'protected', description: 'Protected API, need a valid access token' }
         ]
     }
