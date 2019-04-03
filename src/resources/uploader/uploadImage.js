@@ -9,9 +9,9 @@ const handler = ({ reply, config }) => (field, file, filename, encoding, mimetyp
 
     const fileName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     
-    const absolutePath = path.join(__dirname, `../../../public/images/${fileName}`);
+    const absolutePath = path.join(__dirname, `../../../public/images/uploads/${fileName}`);
     
-    const publicUrl = `${config.address}/public/images/${fileName}.webp`;
+    const publicUrl = `${config.address}/public/images/uploads${fileName}.webp`;
 
     pump(file, fs.createWriteStream(absolutePath), _ => {
         sharp(absolutePath)
