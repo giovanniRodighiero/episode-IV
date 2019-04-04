@@ -11,7 +11,7 @@ const handler = ({ reply, config }) => (field, file, filename, encoding, mimetyp
     
     const absolutePath = path.join(__dirname, `../../../public/images/uploads/${fileName}`);
     
-    const publicUrl = `${config.address}/public/images/uploads${fileName}.webp`;
+    const publicUrl = `${config.address}/public/images/uploads/${fileName}.webp`;
 
     pump(file, fs.createWriteStream(absolutePath), _ => {
         sharp(absolutePath)

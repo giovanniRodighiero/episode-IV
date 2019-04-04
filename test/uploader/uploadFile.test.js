@@ -66,7 +66,6 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
             try {
                 const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
                 const payload = JSON.parse(_payload);
-
                 expect(statusCode).toBe(200);
                 expect(payload.url).not.toBeNull();
                 expect(payload.url).not.toBeUndefined();
