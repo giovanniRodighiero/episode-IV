@@ -19,6 +19,10 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
         

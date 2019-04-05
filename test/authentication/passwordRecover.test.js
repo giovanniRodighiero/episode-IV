@@ -16,6 +16,10 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     test.each([
         ['email', {  }],
     ])(

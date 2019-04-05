@@ -18,6 +18,10 @@ describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     test('it should fail for missing header auth token', async () => {
         expect.assertions(2);
 

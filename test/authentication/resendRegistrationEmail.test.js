@@ -20,6 +20,10 @@ describe(`RESEND CONFIRMATION REGISTRATION testing ${requestsDetails.method} ${r
         }
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+    
     // TESTING MISSING PARAMS IN REQUEST BODY
     test.each([
         ['email', {  }]

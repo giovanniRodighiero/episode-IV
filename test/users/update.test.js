@@ -18,6 +18,10 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:i
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
         
@@ -171,7 +175,44 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url}:i
     
         });
 
-        //TODO: new mail already in user and correct update
+        test('it should fail for an already in use email', async () => {
+            expect.assertions(2);
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenAdmin;
+            const { _id } = await fastify.mongo.db.collection('users').findOne({ email: 'info+userconfirmed@crispybacon.it' });
+            const url = requestsDetails.url + _id.toString();
+            const body = { email: 'userfake3@crispybacon.it' };
+
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url, payload: body });
+                const payload = JSON.parse(_payload);
+    
+                expect(statusCode).toBe(409);
+                expect(payload.code).toBe(errorTypes.ALREADY_EXISTING);
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+        });
+        
+        
+        test('it should succeed for correct params', async () => {
+            expect.assertions(2);
+            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenAdmin;
+            const { _id } = await fastify.mongo.db.collection('users').findOne({ email: 'info+userconfirmed@crispybacon.it' });
+            const url = requestsDetails.url + _id.toString();
+            const body = { email: 'usernuovissimo@crispybacon.it' };
+
+            try {
+                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url, payload: body });
+                const payload = JSON.parse(_payload);
+
+                expect(statusCode).toBe(200);
+                expect(payload.email).toBe('usernuovissimo@crispybacon.it');
+            } catch (error) {
+                console.log(error);
+                expect(error).toBeUndefined();
+            }
+        });
 
     });
 });

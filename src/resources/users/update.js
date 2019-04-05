@@ -47,9 +47,12 @@ const updateController = async function (request, reply) {
         }
     }
 
-    const { value: newUser } = await Users.findAndUpdateOne({ _id }, { $set: request.body }, { project: baseProjection });
+    const { value: newUser } = await Users.findOneAndUpdate(
+        { _id },
+        { $set: request.body },
+        { project: baseProjection, returnOriginal: false });
     reply.code(200);
-    return { code: 'success', data: newUser };
+    return newUser;
 
 };
 
@@ -67,13 +70,7 @@ const updateSchema = {
     },
 
     response: {
-        200: {
-            type: 'object',
-            required: ['code'],
-            properties: {
-                code: { type: 'string' }
-            }
-        },
+        200: 'baseUser#',
 
         400: 'baseError#',
 

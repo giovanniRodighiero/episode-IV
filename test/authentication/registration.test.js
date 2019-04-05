@@ -20,6 +20,10 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
         }
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+    
     // TESTING MISSING PARAMS IN REQUEST BODY
     test.each([
         ['email', { password: 'password', confirmPassword: 'password', privacyAccepted: true }],

@@ -18,7 +18,10 @@ describe(`USER PROFILE UPDATE testing ${requestsDetails.method} ${requestsDetail
     beforeAll(async () => {
         fastify = await buildFastify();
         await fastify.ready();
-        
+    });
+
+    afterAll(async () => {
+        await fastify.close();
     });
 
     beforeEach(done => {

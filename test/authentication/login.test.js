@@ -16,6 +16,10 @@ describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () =
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     // TESTING MISSING PARAMS IN REQUEST BODY
     test.each([
             ['email', { password: 'password' }],

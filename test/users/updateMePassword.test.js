@@ -18,7 +18,11 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
     beforeAll(async () => {
         fastify = await buildFastify();
         await fastify.ready();
-        
+        await seedUsers(fastify.mongo.db);
+    });
+
+    afterAll(async () => {
+        await fastify.close();
     });
 
     beforeEach(done => {
@@ -71,7 +75,6 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
 
     describe('', () => {
 
-        beforeAll(async () => seedUsers(fastify.mongo.db));
     
         test.each([
             ['password', { confirmPassword: 'password' }],

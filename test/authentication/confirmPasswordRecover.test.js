@@ -22,6 +22,10 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     test.each([
         ['token', { password: 'password', confirmPassword: 'password' }],
         ['password', { confirmPassword: 'password', token: 'token' }],
