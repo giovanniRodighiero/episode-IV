@@ -20,6 +20,10 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     test.each([
         ['token', {  }]
     ])('it should fail for missing params (%s)',

@@ -19,6 +19,10 @@ describe(`USER TOKEN BLACKLIST testing ${requestsDetails.method} ${requestsDetai
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
         

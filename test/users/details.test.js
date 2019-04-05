@@ -19,6 +19,10 @@ describe(`USER DETAILS testing ${requestsDetails.method} ${requestsDetails.url}:
         await fastify.ready();
     });
 
+    afterAll(async () => {
+        await fastify.close();
+    });
+    
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
         
