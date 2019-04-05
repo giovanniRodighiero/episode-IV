@@ -5,8 +5,9 @@ const settingsSchema = {
     properties: {
         meta: {
             type: 'object',
-            required: ['title', 'description', 'ogUrl', 'ogTitle', 'ogDescription', 'twitterUrl', 'twitterTitle', 'twitterDescription'],
+            required: ['image', 'title', 'description', 'ogUrl', 'ogTitle', 'ogDescription', 'twitterUrl', 'twitterTitle', 'twitterDescription'],
             properties: {
+                image: { type: 'string', description: 'Site image preview' },
                 title: { type: 'string', description: 'Site meta title' },
                 description: { type: 'string', description: 'Site meta description' },
 

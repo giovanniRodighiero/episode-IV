@@ -1,6 +1,7 @@
 // SETTINGS INFO
 const settings = projectName => ({
     meta: {
+        image: '',
         title: `${projectName} - meta title`,
         description: `${projectName} - meta description`,
 

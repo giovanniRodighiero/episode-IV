@@ -15,7 +15,7 @@ const handler = ({ reply, config }) => (field, file, filename, encoding, mimetyp
 
     pump(file, fs.createWriteStream(absolutePath), _ => {
         sharp(absolutePath)
-            .webp({ lossless: true })
+            .webp({  })
             .toFile(`${absolutePath}.webp`)
             .then(result => {
                 fs.unlink(absolutePath, (error => {
