@@ -1,7 +1,7 @@
 // SETTINGS INFO
-const settings = projectName => ({
+const settings = ({ projectName, address }) => ({
     meta: {
-        image: '',
+        image: `${address}/public/images/uploads/placeholder.png`,
         title: `${projectName} - meta title`,
         description: `${projectName} - meta description`,
 
@@ -23,7 +23,7 @@ async function seedSettings (database, config) {
     try {
         await Settings.deleteMany({});
 
-        await Settings.insertOne(settings(config.projectName));
+        await Settings.insertOne(settings(config));
 
         console.log('seeding settings done, no errors');
         return true;

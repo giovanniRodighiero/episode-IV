@@ -1,12 +1,22 @@
+const fs = require('fs').promises;
+const path = require('path');
 
 const updateController = async function (request, reply) {
     const Settings = this.mongo.db.collection('settings');
     
-    const newSettings = await Settings.findOneAndUpdate({}, { $set: request.body }, { returnOriginal: false } );
+    const { value: oldSettings } = await Settings.findOneAndUpdate({}, { $set: request.body });
     
-    reply.code(200);
-    return newSettings.value;
-
+    if (!!oldSettings.meta.image && request.body.meta.image !== oldSettings.meta.image) {
+        const imagePath = oldSettings.meta.image.split(this.config.address)[1];
+        try {
+            await fs.unlink(path.join(__dirname, '../../../', imagePath));
+        } catch (error) {
+            console.log(error);
+        }
+        reply.code(200);
+        return request.body;
+    }
+    
 };
 
 const updateSchema = {

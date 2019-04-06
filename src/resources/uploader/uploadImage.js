@@ -4,7 +4,6 @@ const fs = require('fs');
 const sharp = require('sharp');
 
 
-
 const handler = ({ reply, config }) => (field, file, filename, encoding, mimetype) => {
 
     const fileName = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
