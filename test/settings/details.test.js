@@ -94,10 +94,10 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(200);
-                expect(payload.meta).toBeInstanceOf(Object);
+                expect(typeof payload.meta).toBe('object');
                 expect(payload.meta.title).not.toBeNull();
                 expect(payload.meta.description).not.toBeNull();
-                expect(payload.lang).toBeInstanceOf(String);
+                expect(typeof payload.lang).toBe('string');
             } catch (error) {
                 console.log(error);
                 expect(error).toBeUndefined();

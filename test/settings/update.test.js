@@ -110,7 +110,7 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
             expect.assertions(3);
 
             requestsDetails.headers['Authorization'] = 'Bearer ' + token;
-            const body = { meta: {} };
+            const body = { meta: { } };
 
             try {
                 const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
@@ -118,7 +118,7 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
 
                 expect(statusCode).toBe(400);
                 expect(payload.code).toBe(errorTypes.MISSING_PARAM);
-                expect(payload.fieldName).toBe('title');
+                expect(payload.fieldName).toBe('image');
             } catch (error) {
                 console.log(error);
                 expect(error).toBeUndefined();
@@ -126,7 +126,7 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
         });
 
         test('it should succeed for correct params and account permissions ', async () => {
-            expect.assertions(3);
+            expect.assertions(4);
 
             requestsDetails.headers['Authorization'] = 'Bearer ' + token;
             const projectName = 'new name'
