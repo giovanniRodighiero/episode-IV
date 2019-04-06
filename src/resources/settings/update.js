@@ -1,12 +1,19 @@
+const replaceOldImages = require('../../services/replaceOldImages');
 
 const updateController = async function (request, reply) {
     const Settings = this.mongo.db.collection('settings');
     
-    const newSettings = await Settings.findOneAndUpdate({}, { $set: request.body }, { returnOriginal: false } );
+    const { value: oldSettings } = await Settings.findOneAndUpdate({}, { $set: request.body });
     
-    reply.code(200);
-    return newSettings.value;
+    try {
+        await replaceOldImages(request.body.meta.image, oldSettings.meta.image);
+    } catch (error) {
+        console.log(error);
+    }
 
+    reply.code(200);
+    return request.body;
+    
 };
 
 const updateSchema = {
