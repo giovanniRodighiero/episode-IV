@@ -17,7 +17,7 @@ const settings = projectName => ({
 });
 
 
-// CLEARS AND THE SETTINGS COLLECTION
+// CLEARS AND SEED THE SETTINGS COLLECTION
 async function seedSettings (database, config) {
     const Settings = database.collection('settings');
     try {

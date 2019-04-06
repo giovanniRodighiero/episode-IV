@@ -2,6 +2,7 @@ const MongoClient = require('mongodb').MongoClient;
 
 const { seedUsers } = require('../src/resources/users/seed');
 const { seedSettings } = require('../src/resources/settings/seed');
+const { seedHomepage } = require('../src/resources/homepage/seed');
 
 const allConfigs = require('../config');
 
@@ -21,6 +22,7 @@ MongoClient.connect(config.database.url, { useNewUrlParser: true }, async functi
 
         await seedUsers(db);
         await seedSettings(db, config);
+        await seedHomepage(db);
 
         client.close();
         
