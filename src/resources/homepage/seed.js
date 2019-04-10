@@ -16,7 +16,8 @@ const homepage = {
     },
 
     hero: {
-        image: '',
+        imageDesktop: '',
+        imageMobile: '',
         title: 'Homepage del sito',
         subtitle: 'Sottotitolo del sito lorem ipsum dolor acta est',
         description: 'Lorem ipsum dolor sit amet, consectetur adisci elit, sed do eiusmod tempor incint ut labore et dolore. lorem ipsum dolor sit amet, consectetur adisci elit, sed do eiusmod tempor incint ut labore et dolore. Lorem ipsum dolor sit amet, consectetur adisci elit, sed do eiusmod tempor incint ut labore et dolore'
