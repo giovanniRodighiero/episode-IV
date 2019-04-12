@@ -1,1 +1,110 @@
-h1{color:red}
+html,
+body {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  background-color: white;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.homepage .hero {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  -webkit-perspective: 1000px;
+          perspective: 1000px;
+  -webkit-perspective-origin: center;
+          perspective-origin: center;
+  margin-bottom: 100px;
+}
+
+.homepage .hero__title {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  -webkit-transform: translate(50%, -50%);
+          transform: translate(50%, -50%);
+  z-index: 1;
+  font-size: 135px;
+  color: goldenrod;
+  margin: 0;
+  text-align: center;
+  line-height: 1;
+}
+
+.homepage .hero__subtitle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  -webkit-transform: translate(-50%, 50%);
+          transform: translate(-50%, 50%);
+  width: 70%;
+  padding: 25px 15px;
+  background-color: white;
+  margin: 0;
+  text-align: center;
+  font-size: 40px;
+}
+
+.homepage .hero__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url("/cover-min.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 50%;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  opacity: 1;
+  mix-blend-mode: color-dodge;
+}
+
+@media (max-width: 991px) {
+  .homepage .hero__title {
+    font-size: 100px;
+  }
+}
+
+@media (max-width: 767px) {
+  .homepage .hero__title {
+    font-size: 70px;
+  }
+}
+
+.homepage .services__title {
+  font-size: 30px;
+  text-align: center;
+}
+
+.homepage .service {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.homepage .service--right > .service__text {
+  order: 1;
+}
+
+.homepage .service--right > .service__image {
+  order: 2;
+}
+
+.homepage .service__image {
+  flex: 3;
+}
+
+.homepage .service__image > img {
+  max-width: 600px;
+}
+
+.homepage .service__text {
+  flex: 2;
+}
+

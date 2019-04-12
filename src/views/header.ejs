@@ -9,15 +9,15 @@
     <title><%= meta.title %></title>
     <!-- Search Engine -->
     <meta name="description" content="<%= meta.description %>">
-    <meta name="image" content="image.png">
+    <meta name="image" content="<%= meta.image %>">
     <!-- Schema.org for Google -->
     <meta itemprop="name" content="<%= meta.title %>">
     <meta itemprop="description" content="<%= meta.description %>">
-    <meta itemprop="image" content="image.png">
+    <meta itemprop="image" content="<%= meta.image %>">
     <!-- Open Graph general (Facebook, Pinterest & Google+) -->
     <meta name="og:title" content="<%= meta.ogTitle %>">
     <meta name="og:description" content="<%= meta.ogDescription %>">
-    <meta name="og:image" content="ogimage">
+    <meta name="og:image" content="<%= meta.image %>">
     <meta name="og:url" content="<%= meta.ogUrl %>">
     <meta name="og:site_name" content="<%= meta.ogTitle %>">
     <meta name="og:locale" content="<%= lang %>">
@@ -28,6 +28,7 @@
     <meta name="twitter:title" content="<%= meta.twitterTitle %>">
     <meta name="twitter:description" content="<%= meta.twitterDescription %>">
 
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700" rel="stylesheet">
     <link rel="stylesheet" href="/public/index.css">
 </head>
-<body>
+<body class="<%= templateName %>">

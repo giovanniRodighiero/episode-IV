@@ -5,7 +5,10 @@ const homepageSchema = {
     type: 'object',
     required: ['meta', 'hero'],
     properties: {
-        meta: settingsSchema.properties.meta,
+        meta: {
+            ...settingsSchema.properties.meta,
+            required: []
+        },
 
         hero: {
             type: 'object',
