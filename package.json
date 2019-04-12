@@ -27,6 +27,7 @@
         "fastify-static": "^2.3.4",
         "fastify-swagger": "^2.3.1",
         "handlebars": "^4.1.0",
+        "lorem-ipsum": "^2.0.1",
         "node-password-encrypter": "^1.0.0",
         "point-of-view": "^3.1.1",
         "pump": "^3.0.0",

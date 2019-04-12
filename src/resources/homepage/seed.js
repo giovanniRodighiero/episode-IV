@@ -1,3 +1,5 @@
+const loremIpsum = require('lorem-ipsum').loremIpsum;
+
 const homepage = {
     code: 'homepage',
 
@@ -16,13 +18,38 @@ const homepage = {
     },
 
     hero: {
-        imageDesktop: '',
-        imageMobile: '',
-        title: 'Homepage del sito',
-        subtitle: 'Sottotitolo del sito lorem ipsum dolor acta est',
-        description: 'Lorem ipsum dolor sit amet, consectetur adisci elit, sed do eiusmod tempor incint ut labore et dolore. lorem ipsum dolor sit amet, consectetur adisci elit, sed do eiusmod tempor incint ut labore et dolore. Lorem ipsum dolor sit amet, consectetur adisci elit, sed do eiusmod tempor incint ut labore et dolore'
+        imageDesktop: 'https://source.unsplash.com/1600x900',
+        imageMobile: 'https://source.unsplash.com/960x1600',
+        title: loremIpsum({ count: 3, units: 'words' }),
+        subtitle: loremIpsum({ count: 10, units: 'words' }),
+        description: loremIpsum({ count: 3, units: 'sentences' })
     },
 
+    services: {
+        title: loremIpsum({ count: 5, units: 'words' }),
+        items: [
+            {
+                title: loremIpsum({ count: 3, units: 'words' }),
+                description: loremIpsum({ count: 3, units: 'sentences' }),
+                image: 'https://source.unsplash.com/800x601'
+            },
+            {
+                title: loremIpsum({ count: 3, units: 'words' }),
+                description: loremIpsum({ count: 3, units: 'sentences' }),
+                image: 'https://source.unsplash.com/800x602'
+            },
+            {
+                title: loremIpsum({ count: 3, units: 'words' }),
+                description: loremIpsum({ count: 3, units: 'sentences' }),
+                image: 'https://source.unsplash.com/800x603'
+            }
+        ]
+    },
+
+    cta: {
+        title: loremIpsum({ count: 5, units: 'words' }),
+        link: '#'
+    }
 };
 
 
