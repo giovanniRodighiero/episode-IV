@@ -31,17 +31,20 @@ const homepage = {
             {
                 title: loremIpsum({ count: 3, units: 'words' }),
                 description: loremIpsum({ count: 3, units: 'sentences' }),
-                image: 'https://source.unsplash.com/800x601'
+                image: 'https://source.unsplash.com/800x601',
+                position: 0
             },
             {
                 title: loremIpsum({ count: 3, units: 'words' }),
                 description: loremIpsum({ count: 3, units: 'sentences' }),
-                image: 'https://source.unsplash.com/800x602'
+                image: 'https://source.unsplash.com/800x602',
+                position: 1
             },
             {
                 title: loremIpsum({ count: 3, units: 'words' }),
                 description: loremIpsum({ count: 3, units: 'sentences' }),
-                image: 'https://source.unsplash.com/800x603'
+                image: 'https://source.unsplash.com/800x603',
+                position: 2
             }
         ]
     },
