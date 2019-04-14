@@ -8,4 +8,7 @@ html, body {
     box-sizing: border-box;
 }
 
-@import "./homepage.scss";
+
+@import "./grid.scss";
+@import "./sass-mq.scss";
+@import "./homepage/homepageIndex.scss";

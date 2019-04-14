@@ -1,0 +1,64 @@
+<%- include('views/header.ejs'); -%>
+    
+<header class="hero">
+    <h1 class="hero__title"><%= hero.title %></h1>
+    <figure class="hero__image hero__image--desktop" style="background-image: url('<%= hero.imageDesktop %>');"></figure>
+    <figure class="hero__image hero__image--mobile" style="background-image: url('<%= hero.imageMobile %>');"></figure>
+    <h2 class="hero__subtitle"><%= hero.subtitle %></h2>
+</header>
+
+<main>
+
+    <section class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <p class="services__title"><%= services.title %></p>
+            </div>
+        </div>
+
+        <% services.items.forEach(function(service, index){ %>
+            <article class="service row align-items-center">
+            <% if (index%2 === 0) { %>
+                <div class="col-sm-12 col-md-7 order-1 order-md-0">
+                    <figure class="service__image">
+                        <img src="<%= service.image %>" alt="" />
+                    </figure>
+                </div>
+
+                <div class="col-sm-12 col-md-5 order-0 order-md-1">
+                    <h3 class="service__title"><%= service.title %></h3>
+                    <p class="service__description"><%= service.description %></p>
+                </div>
+            <% } else { %>
+                <div class="col-sm-12 col-md-5 order-0">
+                    <h3 class="service__title service__title--<%= index%2 !== 0 ? 'right' : '' %>"><%= service.title %></h3>
+                    <p class="service__description"><%= service.description %></p>
+                </div>
+
+                <div class="col-sm-12 col-md-7 order-1">
+                    <figure class="service__image">
+                        <img src="<%= service.image %>" alt="" />
+                    </figure>
+                </div>
+
+            <% } %>
+
+            </article>
+        <% }); %>
+        
+    </section>
+
+    <section class="cta container-fluid">
+        <div class="row align-items-center">
+            <div class="col-sm-12 col-md-10 offset-md-1">
+                <div class="cta__text d-flex flex-column justify-content-center align-items-center">
+                    <h3 class="cta__title"><%= cta.title %></h3>
+                    <a class="cta__link" href="<%= cta.link %>">Scopri di più</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<%- include('views/footer.ejs'); -%>

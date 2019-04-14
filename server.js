@@ -45,9 +45,9 @@ async function buildFastify () {
         engine: {
             ejs: require('ejs'),
         },
-        templates: './src/views',
+        templates: './src/frontend/views',
         options: {
-            filename: resolve('./src/views')
+            filename: resolve('./src/frontend/views')
         }
     });
 

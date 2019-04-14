@@ -8,7 +8,7 @@ const frontendController = async function (request, reply) {
     const meta = mergeMetaTags(request.settings.meta, homepage.meta);
 
     homepage.meta = meta;
-    reply.view('../views/homepage/index.ejs', {
+    reply.view('../../frontend/views/homepage/index.ejs', {
         ...homepage,
         lang: request.settings.lang,
         templateName: 'homepage'
