@@ -1,0 +1,54 @@
+.service {
+    margin-bottom: 30px;
+}
+
+.services__title {
+    font-size: 30px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.service__title {
+    margin: 0;
+}
+
+.service__title--right {
+    text-align: right;
+}
+
+.service {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.service--right {
+    & > .service__text {
+        order: 1;
+    }
+
+    & > .service__image {
+        order: 2;
+    }
+}
+
+.service__image {
+    margin: 0;
+
+    & > img {
+        width: 100%;
+    }
+}
+
+.service__text {
+    flex: 2;
+}
+
+@include mq(mobile) {
+    .service {
+        margin-bottom: 65px;
+    }
+}
