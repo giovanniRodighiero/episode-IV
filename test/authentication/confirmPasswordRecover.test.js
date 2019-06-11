@@ -10,9 +10,7 @@ const requestsDetails = {
 };
 let fastify;
 
-function sleep(ms = 0) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
 
 describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requestsDetails.url};`, () => {

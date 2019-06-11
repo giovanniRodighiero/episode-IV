@@ -68,9 +68,44 @@ const production = {
         name: `${projectName}-production`
     },
     jwtSecret,
-    userRoles
+    userRoles,
+    mailer: {
+        nodemailerConf: {
+            host: 'smtp.ethereal.email',
+            port: 587,
+            auth: {
+                user: 'i6t2mlf4ld4pwqct@ethereal.email',
+                pass: 'u8hR4an9ArfZ8aAtef'
+            }
+        },
+        from: 'noreply@crispybacon.it'
+    },
+    address: `http://localhost:${port}`
 };
 
+// STAGING CONFIG
+const staging = {
+    port,
+    database: {
+        url: `${databaseUrl}-production`,
+        name: `${projectName}-production`
+    },
+    jwtSecret,
+    userRoles,
+    mailer: {
+        nodemailerConf: {
+            host: 'smtp.ethereal.email',
+            port: 587,
+            auth: {
+                user: 'i6t2mlf4ld4pwqct@ethereal.email',
+                pass: 'u8hR4an9ArfZ8aAtef'
+            }
+        },
+        from: 'noreply@crispybacon.it'
+    },
+    address: `http://localhost:${port}`
+}
 
 
-module.exports = { test, development, production };
+
+module.exports = { test, development, staging, production };

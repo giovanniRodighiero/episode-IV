@@ -1,28 +1,28 @@
 const { errorTypes } = require('../errors/schema');
-const { baseProjection } = require('./collection');
+const { USERS } = require('./collection');
 
 const deleteController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
+
     const { id } = request.params;
 
-    // CHECK FOR VALID ID FORMAT
-    if (!this.mongo.ObjectId.isValid(id)) {
-        reply.code(400);
-        return { code: errorTypes.VALIDATION_ERROR };
-    }
+    let _id, userToDelete;
     
-    const _id = new this.mongo.ObjectId(id);
+    try {
 
-    // CHECK FOR SAME PERSON ID
-    if (request.user._id.equals(_id)) {
-        reply.code(403);
-        return { code: errorTypes.NOT_AUTHORIZED };
-    }
+        _id = new this.mongo.ObjectId(id);
 
-    const userToDelete = await Users.findOne({ _id }, baseProjection);
-    
-    // CHECK FOR EXISTING USER
-    if (!userToDelete) {
+        // CHECK FOR SAME PERSON ID
+        if (request.user._id.equals(_id)) {
+            reply.code(403);
+            return { code: errorTypes.NOT_AUTHORIZED };
+        }
+
+        userToDelete = await Users.findOne({ _id }, USERS.baseProjection);
+        if (!userToDelete)
+            throw new Error();
+
+    } catch (error) {
         reply.code(404);
         return { code: errorTypes.NOT_FOUND };
     }
@@ -35,7 +35,6 @@ const deleteController = async function (request, reply) {
     
     // PERFORME DELETE
     await Users.deleteOne({ _id });
-
 
     reply.code(204);
     return;

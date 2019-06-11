@@ -11,16 +11,18 @@
     "license": "ISC",
     "dependencies": {
         "ajv-keywords": "^3.4.0",
-        "fastify": "^2.0.0",
-        "fastify-cors": "^2.1.1",
-        "fastify-jwt": "^0.9.3",
+        "fastify": "^2.4.1",
+        "fastify-cors": "^2.1.3",
+        "fastify-jwt": "^0.9.6",
         "fastify-mongodb": "^1.0.1",
         "fastify-nodemailer": "^3.0.0",
-        "fastify-swagger": "^2.3.1",
-        "handlebars": "^4.1.0",
-        "node-password-encrypter": "^1.0.0"
+        "fastify-plugin": "^1.6.0",
+        "fastify-swagger": "^2.4.0",
+        "handlebars": "^4.1.2",
+        "node-password-encrypter": "^1.0.0",
+        "pino-pretty": "^3.1.0"
     },
     "devDependencies": {
-        "jest": "^24.1.0"
+        "jest": "^24.8.0"
     }
 }

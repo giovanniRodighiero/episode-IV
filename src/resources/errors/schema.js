@@ -29,7 +29,33 @@ const baseErrorSchema = {
     additionalProperties: false
 }
 
+const generateErrorSchema = (codes, description) => {
+    if (!Array.isArray(codes)) {
+        if (codes === 'all')
+            codes = availableErrorCodes
+        else
+            codes = [ codes ];
+    }
+
+    const schema = {
+        ...baseErrorSchema,
+        properties: {
+            ...baseErrorSchema.properties,
+            code: { ...baseErrorSchema.properties.code },
+            fieldName: { ...baseErrorSchema.properties.fieldName },
+            rawResponse: { ...baseErrorSchema.properties.rawResponse },
+        }
+    };
+    delete schema.$id;
+
+    schema.properties.code.enum = codes;
+    schema.description = description;
+
+    return schema;
+};
+
 module.exports = {
     baseErrorSchema,
-    errorTypes
-}
+    errorTypes,
+    generateErrorSchema
+};

@@ -7,7 +7,7 @@ const { confirmPasswordRecoverController, confirmPasswordRecoverSchema } = requi
 
 
 
-function initAuthentication (fastify) {
+async function initAuthentication (fastify) {
 
     fastify.post('/api/v1/login', {
         schema: loginSchema

@@ -25,7 +25,7 @@ async function initUsers (fastify) {
     fastify.addSchema(baseUserSchema);
 
     // DATABSE MIGRATION (indexes and stuff)
-    await ensureIndexes(fastify);
+    fastify.register(ensureIndexes);
 
     fastify.post('/api/v1/users', {
         preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.ADMIN) ],
@@ -72,7 +72,6 @@ async function initUsers (fastify) {
         schema: invalidateTokensSchema
     }, invalidateTokensController);
 
-    return true;
 };
 
 module.exports = initUsers;

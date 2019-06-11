@@ -9,7 +9,7 @@ const settingsSchema = require('./schema');
 const { detailsController, detailsSchema } = require('./details');
 const { updateController, updateSchema } = require('./update');
 
-const initSettings = fastify => {
+async function initSettings (fastify) {
 
     const { userRoles } = fastify.config;
 

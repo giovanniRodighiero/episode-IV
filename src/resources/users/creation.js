@@ -1,53 +1,53 @@
-const { errorTypes } = require('../errors/schema');
-const { userRegistrationTemplate } = require('../../views/email');
+const { promisify } = require('util');
 
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { userRegistrationTemplate } = require('../../views/email');
+const { USERS } = require('./collection');
+
+let signJwt;
 
 const creationController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    if (!signJwt)
+        signJwt = promisify(this.jwt.sign);
+
+    const Users = this.mongo.db.collection(USERS.collectionName);
     const { email, role } = request.body;
 
     // CHECK FOR TOO HIGH ROLE
     if (role >= request.user.role) {
         reply.code(400);
-        return { code: errorTypes.VALIDATION_ERROR };
+        return { code: errorTypes.VALIDATION_ERROR, fieldName: 'role' };
     }
 
     // CHECK FOR ALREADY EXISTING EMAIL
     const user = await Users.findOne({ email }, { email: 1 });
     if (user) {
         reply.code(409);
-        return { code: errorTypes.ALREADY_EXISTING };
+        return { code: errorTypes.ALREADY_EXISTING, fieldName: 'email' };
     }
 
     // ALL FINE SAVE + EMAIL
     await Users.insertOne({ email, role, accountConfirmed: false, privacyAccepted: false });
-    this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
-        if (err) {
-            console.log(err)
-            reply.code(500);
-            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-        }
-
-        this.nodemailer.sendMail({
+    try {
+        const token = await signJwt({ account: email }, { expiresIn: '2 days' })
+        await this.nodemailer.sendMail({
             from: this.config.mailer.from,
             to: email,
             subject: 'Account confirmation',
             html: userRegistrationTemplate({
                 htmlTitle: 'Account confirmation',
-                activationLink: this.config.address + '/api/v1/confirmation/' + token
+                activationLink: `${this.config.address}/api/v1/confirmation/${token}`
             })
-        }, (err, info) => {
-            
-            if (err) {
-                console.log(err)
-                reply.code(500);
-                reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-            }
-
-            reply.code(201);
-            reply.send({ code: 'success' });
         });
-    });
+
+        reply.code(201);
+        reply.send({ code: 'success' });
+    } catch (error) {
+        this.log.error(error);
+        reply.code(500);
+        reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
+    }
+
 };
 
 const creationSchema = {
@@ -68,18 +68,17 @@ const creationSchema = {
     response: {
 
         200: {
+            description: 'User created successfully',
             type: 'object',
             required: ['code'],
             properties: {
-                code: { type: 'string' }
+                code: { type: 'string', description: 'Success code', default: 'success' }
             }
         },
 
-        400: 'baseError#',
+        400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation errors'),
 
-        401: 'baseError#',
-
-        403: 'baseError#',
+        409: generateErrorSchema(errorTypes.ALREADY_EXISTING, 'Email address already in use'),
     }
 };
 
