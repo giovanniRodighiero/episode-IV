@@ -1,3 +1,5 @@
+const schemas = require('./schema');
+
 const baseProjection = {
     email: 1,
     role: 1,
@@ -7,7 +9,8 @@ const baseProjection = {
 // COLLECTION RELATED INFORMATIONS
 const USERS = {
     collectionName: 'users',
-    baseProjection
+    baseProjection,
+    schemas
 };
 
 // INDEXES SPECIFICATIONS
@@ -25,6 +28,8 @@ async function ensureIndexes (fastify) {
         for (const [ keyPatterns, options = null ] of indexes) {
             await Users.createIndex(keyPatterns, options);
         }
+
+        return true;
 
     } catch (error) {
         throw error;

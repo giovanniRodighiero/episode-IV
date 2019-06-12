@@ -1,27 +1,28 @@
-const { errorTypes } = require('../errors/schema');
-const { baseProjection } = require('./collection');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('./collection');
 
 const updateMeController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
 
     const { email } = request.user;
 
     // CHECK FOR ALREADY EXISTING EMAIL
     if (request.body.email && request.body.email !== email) {
-        let user = await Users.findOne({ email: request.body.email }, { email: 1 });
+        const user = await Users.findOne({ email: request.body.email }, { email: 1 });
         if (user) {
             reply.code(409);
-            return { code: errorTypes.ALREADY_EXISTING };
+            return { code: errorTypes.ALREADY_EXISTING, fieldName: 'email' };
         }
     }
 
-    const { value: user } = await Users.findOneAndUpdate(
+    const { value } = await Users.findOneAndUpdate(
         { email },
         { $set: request.body },
-        { project: baseProjection, returnOriginal: false }
+        { projection: USERS.baseProjection, returnOriginal: false }
     );
+
     reply.code(200);
-    return { code: 'success', user };
+    return { code: 'success', user: value };
 
 };
 
@@ -34,7 +35,8 @@ const updateMeSchema = {
         type: 'object',
         properties: {
             email: { type: 'string', description: 'User email, also used in login' }
-        }
+        },
+        removeAdditionals: true
     },
 
     response: {
@@ -43,11 +45,11 @@ const updateMeSchema = {
             required: ['code', 'user'],
             properties: {
                 code: { type: 'string' },
-                user: 'baseUser#'
+                user: USERS.schemas.baseUserSchema
             }
         },
 
-        409: 'baseError#',
+        409: generateErrorSchema(errorTypes.ALREADY_EXISTING, 'Email address already in use'),
     }
 
 };

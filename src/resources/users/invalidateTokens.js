@@ -1,8 +1,9 @@
-const { errorTypes } = require('../errors/schema');
-
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('./collection');
 
 const invalidateTokensController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
+
     const { ObjectId } = this.mongo;
     const { users } = request.body;
 
@@ -40,6 +41,18 @@ const invalidateTokensSchema = {
                 items: { type: 'string' }
             }
         }
+    },
+
+    response: {
+        200: {
+            description: 'Tokens invalidated successfully',
+            type: 'object',
+            properties: {
+                code: { type: 'string' }
+            }
+        },
+
+        400: generateErrorSchema([errorTypes.VALIDATION_ERROR, errorTypes.MISSING_PARAM], 'Missing params or invalid user id specified')
     }
 };
 

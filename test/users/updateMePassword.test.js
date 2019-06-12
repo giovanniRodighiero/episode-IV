@@ -4,15 +4,17 @@ const { seedUsers } = require('../../src/resources/users/seed');
 
 const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImluZm9AY3Jpc3B5YmFjb24uaXQifQ.pihOQQp-7P1yWWxMs8GsrIkPV6p_JFzAwZhBo-GnISg';
 
-const requestsDetails = {
-    method: 'PUT',
-    url: '/api/v1/users/me/password',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (token, options) {
+    return {
+        method: 'PUT',
+        url: `/api/v1/users/me/password`,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        ...options
+    }
 };
-let fastify;
-let token;
-let tokenUser;
+let fastify, token, tokenUser;
 
+const requestsDetails = buildRequest('token');
 describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
@@ -37,38 +39,41 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
 
     test('it should fail for wrong access token', async () => {
         expect.assertions(2);
-        requestsDetails.headers['Authorization'] = 'Bearer ' + fakeToken;
-        const body = {
+        const body = { payload: {
             password: 'password',
             confirmPassword: 'password'
-        };
+        }};
+        const requestsDetails = buildRequest(fakeToken, body);
+
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, body });
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(401);
             expect(payload.code).toBe(errorTypes.NOT_AUTHENTICATED);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
 
     test('it should fail for non confirmed account', async () => {
         expect.assertions(2);
-        requestsDetails.headers['Authorization'] = 'Bearer ' + tokenUser;
-        const body = {
+
+        const body = { payload: {
             password: 'password',
             confirmPassword: 'password'
-        };
+        }};
+        const requestsDetails = buildRequest(tokenUser, body);
+
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, body });
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(403);
             expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
@@ -77,16 +82,17 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
 
     
         test.each([
-            ['password', { confirmPassword: 'password' }],
-            ['confirmPassword', { password: 'password' }],
+            ['password', { payload: { confirmPassword: 'password' } }],
+            ['confirmPassword', { payload: { password: 'password' } }],
         ])(
             'it should fail for missing params (%s)',
             async (fieldName, body) => {
                 expect.assertions(6);
-                requestsDetails.headers['Authorization'] = 'Bearer ' + token;
-                
+
+                const requestsDetails = buildRequest(token, body)
+
                 try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                    const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                     const payload = JSON.parse(_payload);
     
                     expect(statusCode).toBe(400);
@@ -96,21 +102,22 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
                     expect(payload.fieldName).not.toBeUndefined();
                     expect(payload.fieldName).toBe(fieldName);
                 } catch (error) {
-                    console.log(error);
+                    fastify.log.error(error);
                     expect(error).toBeUndefined();
                 }
         });
 
         test('it should fail validation for mismatching passwords', async () => {
             expect.assertions(4);
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
             
-            const body = {
+            const body = { payload: {
                 password: 'password',
                 confirmPassword: 'p'
-            };
+            }};
+            const requestsDetails = buildRequest(token, body);
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
         
                 expect(statusCode).toBe(400);
@@ -118,22 +125,22 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
                 expect(payload.code).not.toBeUndefined();
                 expect(payload.code).toBe(errorTypes.PASSWORD_MISMATCH);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
 
         test('it should succeed for valid token and parameters', async () => {
             expect.assertions(4);
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
             
-            const body = {
+            const body = { payload: {
                 password: 'password',
                 confirmPassword: 'password'
-            };
+            }};
+            const requestsDetails = buildRequest(token, body);
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
         
                 expect(statusCode).toBe(200);
@@ -141,7 +148,7 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
                 expect(payload.code).not.toBeUndefined();
                 expect(payload.code).toBe('success');
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });

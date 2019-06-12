@@ -1,4 +1,4 @@
-const { errorTypes } = require('../errors/schema');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
 const { USERS } = require('./collection');
 
 const deleteController = async function (request, reply) {
@@ -50,9 +50,12 @@ const deleteSchema = {
     },
 
     response: {
-        400: 'baseError#',
-        403: 'baseError#',
-        404: 'baseError#',
+        204: {
+            description: 'User deleted successfully',
+            type: 'null'
+        },
+        400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation errors'),
+        404: generateErrorSchema(errorTypes.NOT_FOUND, 'User not found for the provided id')
     }
 };
 

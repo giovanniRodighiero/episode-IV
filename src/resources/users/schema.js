@@ -1,5 +1,4 @@
 const baseUserSchema = {
-    $id: 'baseUser',
     type: 'object',
     required: ['email', 'role'],
     properties: {

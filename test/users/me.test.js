@@ -4,13 +4,16 @@ const { seedUsers } = require('../../src/resources/users/seed');
 
 const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImluZm9AY3Jpc3B5YmFjb24uaXQifQ.pihOQQp-7P1yWWxMs8GsrIkPV6p_JFzAwZhBo-GnISg';
 
-const requestsDetails = {
-    method: 'GET',
-    url: '/api/v1/users/me',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (token) {
+    return {
+        method: 'GET',
+        url: `/api/v1/users/me`,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    }
 };
 let fastify;
 
+const requestsDetails = buildRequest('token');
 describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
@@ -22,33 +25,20 @@ describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};
         await fastify.close();
     });
 
-    test('it should fail for missing header auth token', async () => {
-        expect.assertions(2);
-
-        try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
-            const payload = JSON.parse(_payload);
-
-            expect(statusCode).toBe(401);
-            expect(payload.code).toBe(errorTypes.NOT_AUTHENTICATED);
-        } catch (error) {
-            console.log(error);
-            expect(error).toBeUndefined();
-        }
-    });
 
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
         
-        requestsDetails.headers['Authorization'] = 'Bearer ' + fakeToken;
+        const requestsDetails = buildRequest(fakeToken);
+
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(401);
             expect(payload.code).toBe(errorTypes.NOT_AUTHENTICATED);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
@@ -61,16 +51,17 @@ describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};
             expect.assertions(2);
     
             fastify.jwt.sign({ email: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+                const requestsDetails = buildRequest(token);
+
                 try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+                    const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                     const payload = JSON.parse(_payload);
         
                     expect(statusCode).toBe(401);
                     expect(payload.code).toBe(errorTypes.NOT_AUTHENTICATED);
                     done();
                 } catch (error) {
-                    console.log(error);
+                    fastify.log.error(error);
                     expect(error).toBeUndefined();
                     done();         
                 }
@@ -83,10 +74,10 @@ describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};
         expect.assertions(5);
     
         fastify.jwt.sign({ email: 'info@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+            const requestsDetails = buildRequest(token);
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(200);

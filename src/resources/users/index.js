@@ -21,9 +21,6 @@ async function initUsers (fastify) {
 
     const { userRoles } = fastify.config;
 
-    // LOADING SCHEMA
-    fastify.addSchema(baseUserSchema);
-
     // DATABSE MIGRATION (indexes and stuff)
     fastify.register(ensureIndexes);
 
