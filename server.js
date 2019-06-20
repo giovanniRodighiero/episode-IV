@@ -69,7 +69,7 @@ function buildFastify () {
     fastify.register(fastifyPlugin(require('./src/resources/errors'), { name: 'errors' }));
     fastify.register(require('./src/resources/users'), { name: 'users' });
     fastify.register(require('./src/resources/authentication'), { name: 'authentication' });
-    // fastify.register(require('./src/resources/settings'), { name: 'settings' });
+    fastify.register(require('./src/resources/settings'), { name: 'settings' });
 
     return fastify;
 };

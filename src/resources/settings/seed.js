@@ -1,3 +1,5 @@
+const { SETTINGS } = require('./collection');
+
 // SETTINGS INFO
 const settings = projectName => ({
     defaultLang: 'it'
@@ -6,7 +8,7 @@ const settings = projectName => ({
 
 // CLEARS AND THE SETTINGS COLLECTION
 async function seedSettings (database, config) {
-    const Settings = database.collection('settings');
+    const Settings = database.collection(SETTINGS.collectionName);
     try {
         await Settings.deleteMany({});
 

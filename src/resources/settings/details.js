@@ -1,5 +1,7 @@
+const { SETTINGS } = require('./collection');
+
 const detailsController = async function (request, reply) {
-    const Settings = this.mongo.db.collection('settings');
+    const Settings = this.mongo.db.collection(SETTINGS.collectionName);
 
     const settings = await Settings.findOne({ });
 
@@ -8,12 +10,12 @@ const detailsController = async function (request, reply) {
 };
 
 const detailsSchema = {
-    summary: 'Returns a single user.',
-    description: 'Given the unique id of an existing user, it returns his profile.',
+    summary: 'Returns the settings',
+    description: 'Returns the settings',
     tags: ['Settings'],
 
     response: {
-        200: 'settings#'
+        200: SETTINGS.schemas.baseSettingsSchema
     }
 };
 
