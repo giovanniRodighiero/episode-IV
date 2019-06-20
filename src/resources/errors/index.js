@@ -6,7 +6,7 @@ async function initErrors (fastify) {
     fastify.addSchema(baseErrorSchema);
 
     fastify.setErrorHandler(async (error, request, reply) => {
-        
+
         if (error.validation) {
 
             const [ validationError ] = error.validation;

@@ -2,15 +2,19 @@ const buildFastify = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
-const requestsDetails = {
-    method: 'POST',
-    url: '/api/v1/confirm-registration',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (options) {
+    return {
+        method: 'POST',
+        url: '/api/v1/confirm-registration',
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+    }
 };
 let fastify;
 
 const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
+const requestsDetails = buildRequest();
 describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};`, () =>{
 
     beforeAll(async () => {
@@ -23,12 +27,15 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
     });
 
     test.each([
-        ['token', {  }]
+        ['token', { payload: {} }]
     ])('it should fail for missing params (%s)',
         async (fieldName, body) => {
             expect.assertions(6);
+
+            const requestsDetails = buildRequest(body);
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(400);
@@ -38,7 +45,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
                 expect(payload.fieldName).not.toBeUndefined();
                 expect(payload.fieldName).toBe(fieldName);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         }
@@ -47,14 +54,16 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
 
-        const body = { token: 'invalidtoken' };
+        const body = { payload: { token: 'invalidtoken' } };
+        const requestsDetails = buildRequest(body);
+
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
             expect(statusCode).toBe(400);
             expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();            
         }
     });
@@ -65,16 +74,18 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: 1 }, async (err, token) => {
             await sleep(2000);
             
-            const body = { token };
+            const body = { payload: { token } };
+            const requestsDetails = buildRequest(body);
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(403);
                 expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
                 done();
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();            
             }
 
@@ -89,16 +100,18 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect.assertions(2);
     
             fastify.jwt.sign({ account: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token };
+                const body = { payload: { token } };
+                const requestsDetails = buildRequest(body);
+
                 try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                    const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                     const payload = JSON.parse(_payload);
         
                     expect(statusCode).toBe(404);
                     expect(payload.code).toBe(errorTypes.NOT_FOUND);
                     done();
                 } catch (error) {
-                    console.log(error);
+                    fastify.log.error(error);
                     expect(error).toBeUndefined();            
                 }
     
@@ -109,16 +122,18 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect.assertions(2);
     
             fastify.jwt.sign({ account: 'info@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token };
+                const body = { payload: { token } };
+                const requestsDetails = buildRequest(body);
+
                 try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                    const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                     const payload = JSON.parse(_payload);
         
                     expect(statusCode).toBe(400);
                     expect(payload.code).toBe(errorTypes.ALREADY_ACTIVE);
                     done();
                 } catch (error) {
-                    console.log(error);
+                    fastify.log.error(error);
                     expect(error).toBeUndefined();            
                 }
     
@@ -129,16 +144,18 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect.assertions(2);
     
             fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token };
+                const body = { payload: { token } };
+                const requestsDetails = buildRequest(body);
+
                 try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                    const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                     const payload = JSON.parse(_payload);
         
                     expect(statusCode).toBe(200);
                     expect(payload.code).toBe('success');
                     done();
                 } catch (error) {
-                    console.log(error);
+                    fastify.log.error(error);
                     expect(error).toBeUndefined();            
                 }
     

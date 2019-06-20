@@ -1,53 +1,52 @@
 const { encrypt } = require('node-password-encrypter');
 
-const { errorTypes } = require('../errors/schema');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('../users/collection');
 
 const MALFORMED_JWT = 'JsonWebTokenError';
 const EXPIRED_JWT = 'TokenExpiredError';
 
-const confirmPasswordRecoverController = function (request, reply) {
+
+
+const confirmPasswordRecoverController = async function (request, reply) {
     const { token, password } = request.body;
+    
+    let decoded;
+    try {
+        // using sync implementation https://github.com/auth0/node-jsonwebtoken/issues/111
+        decoded = this.jwt.verify(token);
+    } catch (error) {
 
-    this.jwt.verify(token, async (err, decoded) => {
         // TOKEN MALFORMED OR EXPIRED
-        if (err) {
-            console.log(err)
-            reply.code(400);
-            if (err.name === MALFORMED_JWT)
-                reply.send({ code: errorTypes.VALIDATION_ERROR, fieldName: 'token' });
-            else if (err.name === EXPIRED_JWT) {
-                reply.code(403);
-                reply.send({ code: errorTypes.NOT_AUTHORIZED });
-            }
-            return;
+        reply.code(400);
+        if (error.name === MALFORMED_JWT)
+            return { code: errorTypes.VALIDATION_ERROR, fieldName: 'token' };
+
+        if (error.name === EXPIRED_JWT) {
+            reply.code(403);
+            return { code: errorTypes.NOT_AUTHORIZED };
         }
+        request.log.error(error);
+        throw error;
+    }
 
-        try {
-            const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
 
-            const { account: email } = decoded;
-            const user = await Users.findOne({ email });
+    const { account: email } = decoded;
+    const user = await Users.findOne({ email });
 
-            // WRONG EMAIL
-            if (!user) {
-                reply.code(404);
-                reply.send({ code: errorTypes.NOT_FOUND });
-            } else {
-                // ALL FINE
-                const { salt, encryptedContent } = await encrypt({ content: password, keylen: 128, iterations: 1000 });
-                await Users.updateOne({ email }, { $set: {
-                    salt,
-                    password: encryptedContent
-                }});
-                reply.code(200);
-                reply.send({ code: 'success' });
-            }
-        } catch (error) {
-            console.log(error);
-            reply.code(500);
-            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-        }
-    });
+    // WRONG EMAIL
+    if (!user) {
+        reply.code(404);
+        return { code: errorTypes.NOT_FOUND, fieldName: 'email' };
+    }
+    
+    // ALL FINE
+    const { salt, encryptedContent } = await encrypt({ content: password, keylen: 128, iterations: 1000 });
+    await Users.updateOne({ email }, { $set: { salt, password: encryptedContent } });
+    reply.code(200);
+    return { code: 'success' };
+        
 };
 
 const confirmPasswordRecoverSchema = {
@@ -76,11 +75,11 @@ const confirmPasswordRecoverSchema = {
             additionalProperties: false
         },
         
-        400: 'baseError#',
+        400: generateErrorSchema([errorTypes.VALIDATION_ERROR, errorTypes.MISSING_PARAM, errorTypes.PASSWORD_MISMATCH], 'Validation errors'),
 
-        403: 'baseError#',
+        403: generateErrorSchema(errorTypes.NOT_AUTHORIZED, 'Operation not authorized or the link is expired'),
 
-        404: 'baseError#'
+        404: generateErrorSchema(errorTypes.NOT_FOUND, 'User not found for the specified email')
     }
 };
 

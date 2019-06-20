@@ -2,13 +2,17 @@ const buildFastify = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
-const requestsDetails = {
-    method: 'POST',
-    url: '/api/v1/password-recover',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (options) {
+    return {
+        method: 'POST',
+        url: '/api/v1/password-recover',
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+    }
 };
 let fastify;
 
+const requestsDetails = buildRequest();
 describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
@@ -21,13 +25,16 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
     });
 
     test.each([
-        ['email', {  }],
+        ['email', { payload: {} }],
     ])(
         'it should fail for missing params (%s)',
         async (fieldName, body) => {
             expect.assertions(6);
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const requestsDetails = buildRequest(body);
+
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(400);
@@ -37,7 +44,7 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
                 expect(payload.fieldName).not.toBeUndefined();
                 expect(payload.fieldName).toBe(fieldName);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         }
@@ -45,23 +52,24 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
 
     describe('', () => {
 
-        beforeAll(async () => seedUsers(fastify.mongo.db));
+        beforeAll(async () => { await seedUsers(fastify.mongo.db) });
     
         test('it should fail for not found email', async () => {
             expect.assertions(3);
 
-            const body = {
-                email: 'info+++@crispybacon.it'
-            };
+            const body = { payload: { email: 'info+++@crispybacon.it' } };
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const requestsDetails = buildRequest(body);
+
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toEqual(404);
                 expect(payload).not.toBeUndefined();
                 expect(payload.code).toEqual(errorTypes.NOT_FOUND);
             } catch (error) {
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
@@ -69,18 +77,19 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
         test('it should fail for not active account', async () => {
             expect.assertions(3);
 
-            const body = {
-                email: 'info+user@crispybacon.it'
-            };
+            const body = { payload: { email: 'info+user@crispybacon.it' } };
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const requestsDetails = buildRequest(body);
+
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toEqual(403);
                 expect(payload).not.toBeUndefined();
                 expect(payload.code).toEqual(errorTypes.NOT_AUTHORIZED);
             } catch (error) {
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
@@ -88,17 +97,19 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
         test('it should succeed for an existing confirmed account', async () => {
             expect.assertions(3);
 
-            const body = {
-                email: 'info@crispybacon.it'
-            };
+            const body = { payload: { email: 'info@crispybacon.it' } };
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const requestsDetails = buildRequest(body);
+
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toEqual(200);
                 expect(payload).not.toBeUndefined();
                 expect(payload.code).toBe('success');
             } catch (error) {
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
