@@ -7,10 +7,14 @@ const secureRole = require('../../middlewares/role');
 const { detailsController, detailsSchema } = require('./details');
 const { updateController, updateSchema } = require('./update');
 
+const { ensureIndexes } = require('./collection');
+
 async function initSettings (fastify) {
 
     const { userRoles } = fastify.config;
 
+    await ensureIndexes(fastify);
+    
     fastify.get('/api/v1/settings', {
         preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.SUPERADMIN) ],
         schema: detailsSchema
