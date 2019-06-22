@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 
 const { errorTypes, generateErrorSchema } = require('../errors/schema');
-const { userRegistrationTemplate } = require('../../views/email');
+const { userRegistrationTemplate } = require('../../emailTemplates');
 const { USERS } = require('./collection');
 
 let signJwt;

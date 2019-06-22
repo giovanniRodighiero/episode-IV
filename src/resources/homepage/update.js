@@ -1,16 +1,18 @@
 const replaceOldImages = require('../../services/replaceOldImages');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { HOMEPAGE } = require('./collection');
 
 const updateController = async function (request, reply) {
-    const Pages = this.mongo.db.collection('pages');
+    const Pages = this.mongo.db.collection(HOMEPAGE.collectionName);
 
-    const { value: oldHomepage } = await Pages.findOneAndUpdate({ code: 'homepage' }, { $set: request.body });
+    const { value: oldHomepage } = await Pages.findOneAndUpdate({ code: HOMEPAGE.code }, { $set: request.body });
 
     try {
         await replaceOldImages(request.body.meta.image, oldHomepage.meta.image);
         await replaceOldImages(request.body.hero.imageDesktop, oldHomepage.hero.imageDesktop);
         await replaceOldImages(request.body.hero.imageMobile, oldHomepage.hero.imageMobile);
     } catch (error) {
-        console.log(error);
+        this.log.error('error replacing one of the images', error);
     }
 
     reply.code(200);
@@ -22,12 +24,12 @@ const updateSchema = {
     description: 'Updates the homepage informations',
     tags: ['Homepage'],
 
-    body: 'homepage#',
+    body: HOMEPAGE.schemas.baseHomepageSchema,
 
     response: {
-        200: 'homepage#',
+        200: HOMEPAGE.schemas.baseHomepageSchema,
 
-        400: 'baseError#'
+        400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation error')
     }
 };
 

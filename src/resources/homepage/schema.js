@@ -1,12 +1,11 @@
-const settingsSchema = require('../settings/schema');
+const { baseSettingsSchema } = require('../settings/schema');
 
-const homepageSchema = {
-    $id: 'homepage',
+const baseHomepageSchema = {
     type: 'object',
     required: ['meta', 'hero'],
     properties: {
         meta: {
-            ...settingsSchema.properties.meta,
+            ...baseSettingsSchema.properties.meta,
             required: []
         },
 
@@ -55,4 +54,6 @@ const homepageSchema = {
     },
 };
 
-module.exports = homepageSchema;
+module.exports = {
+    baseHomepageSchema
+};

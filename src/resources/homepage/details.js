@@ -1,9 +1,10 @@
-const { errorTypes } = require('../errors/schema');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { HOMEPAGE } = require('./collection');
 
 const detailsController = async function (request, reply) {
-    const Pages = this.mongo.db.collection('pages');
+    const Pages = this.mongo.db.collection(HOMEPAGE.collectionName);
 
-    const homepage = await Pages.findOne({ code: 'homepage' });
+    const homepage = await Pages.findOne({ code: HOMEPAGE.code });
 
     if (!homepage) {
         reply.code(404);
@@ -20,9 +21,9 @@ const detailsSchema = {
     tags: ['Pages'],
 
     response: {
-        200: 'homepage#',
+        200: HOMEPAGE.schemas.baseHomepageSchema,
 
-        404: 'baseError#'
+        404: generateErrorSchema(errorTypes.NOT_FOUND, 'Page not found')
     }
 };
 

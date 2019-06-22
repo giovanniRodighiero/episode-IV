@@ -1,7 +1,7 @@
 const { encrypt } = require('node-password-encrypter');
 const { promisify } = require('util');
 
-const { userRegistrationTemplate } = require('../../views/email');
+const { userRegistrationTemplate } = require('../../emailTemplates');
 const { errorTypes, generateErrorSchema } = require('../errors/schema');
 const { USERS } = require('../users/collection');
 

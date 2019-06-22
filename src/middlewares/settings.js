@@ -5,6 +5,7 @@ const settingsMiddleware = function (request, reply, next) {
 
     Settings.findOne({ })
         .then(settings => {
+            console.log(settings)
             request.settings = settings;
             next();
         })

@@ -5,15 +5,12 @@ const secureRole = require('../../middlewares/role');
 const settingsMiddleware = require('../../middlewares/settings');
 
 // CONTROLLER
-const homepageSchema = require('./schema');
 const { detailsController, detailsSchema } = require('./details');
 const { updateController, updateSchema } = require('./update');
 const { frontendController } = require('./frontend');
 
 const initHomepage = async function (fastify) {
     const { userRoles } = fastify.config;
-
-    fastify.addSchema(homepageSchema);
 
     fastify.get('/api/v1/pages/homepage', {
         preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.USER) ],
