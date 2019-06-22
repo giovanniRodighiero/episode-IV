@@ -1,32 +1,22 @@
 const schemas = require('./schema');
 
-const baseProjection = {
-    email: 1,
-    role: 1,
-    accountConfirmed: 1
-};
-
 // COLLECTION RELATED INFORMATIONS
-const USERS = {
-    collectionName: 'users',
-    baseProjection,
+const SETTINGS = {
+    collectionName: 'settings',
     schemas
 };
 
 // INDEXES SPECIFICATIONS
-const indexes = [
-    [ { email: 1 }, { unique: true } ],
-    [ { accountConfirmed: 1 } ]
-];
+const indexes = [];
 
 // SET UP THE USERS COLLECTION
 async function ensureIndexes (fastify) {
     try {
-        const Users = fastify.mongo.db.collection(USERS.collectionName);
+        const Settings = fastify.mongo.db.collection(SETTINGS.collectionName);
 
         // creates indexes
         for (const [ keyPatterns, options = null ] of indexes) {
-            await Users.createIndex(keyPatterns, options);
+            await Settings.createIndex(keyPatterns, options);
         }
 
         return true;
@@ -39,6 +29,5 @@ async function ensureIndexes (fastify) {
 module.exports = {
     indexes,
     ensureIndexes,
-    baseProjection,
-    USERS
+    SETTINGS
 };

@@ -1,23 +1,27 @@
 const buildFastify = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
+const { USERS } = require('../../src/resources/users/collection');
 
 const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImluZm9AY3Jpc3B5YmFjb24uaXQifQ.pihOQQp-7P1yWWxMs8GsrIkPV6p_JFzAwZhBo-GnISg';
 
-const requestsDetails = {
-    method: 'GET',
-    url: '/api/v1/users',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (token, query = '') {
+    return {
+        method: 'GET',
+        url: `/api/v1/users${query}`,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    }
 };
-let fastify;
-let token, tokenUser;
+let fastify, token, tokenUser, Users;
 
-
+const requestsDetails = buildRequest('token');
 describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
         fastify = await buildFastify();
         await fastify.ready();
+
+        Users = fastify.mongo.db.collection(USERS.collectionName);
     });
 
     afterAll(async () => {
@@ -27,15 +31,16 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
         
-        requestsDetails.headers['Authorization'] = 'Bearer ' + fakeToken;
+        const requestsDetails = buildRequest(fakeToken);
+
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(401);
             expect(payload.code).toBe(errorTypes.NOT_AUTHENTICATED);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
@@ -57,17 +62,16 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
         test('it should fail for invalid page', async () => {
             expect.assertions(2);
             
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
-            const url = requestsDetails.url + '?page=-1';
+            const requestsDetails = buildRequest(token, '?page=-1');
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(400);
                 expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
@@ -75,17 +79,16 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
         test('it should fail for invalid per page quantity', async () => {
             expect.assertions(2);
             
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
-            const url = requestsDetails.url + '?perPage=-1';
-            
+            const requestsDetails = buildRequest(token, '?perPage=-1');
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, url });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(400);
                 expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
@@ -93,15 +96,16 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
         test('it should fail for non admin account', async () => {
             expect.assertions(2);
     
-            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenUser;
+            const requestsDetails = buildRequest(tokenUser);
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(403);
                 expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
     
@@ -110,12 +114,12 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
         test('it should succeed for correct permissions', async () => {
             expect.assertions(10);
     
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
+            const requestsDetails = buildRequest(token);
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
-                const count = await fastify.mongo.db.collection('users').countDocuments({ role: { $lt: 100 } })
+                const count = await Users.countDocuments({ role: { $lt: 100 } })
                 
                 expect(statusCode).toBe(200);
                 expect(payload.totalCount).toBe(count);
@@ -128,7 +132,7 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
                 expect(payload.data[0].salt).toBeUndefined();
                 expect(payload.data[0].password).toBeUndefined();
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });

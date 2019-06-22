@@ -1,7 +1,11 @@
 const { encrypt } = require('node-password-encrypter');
 
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('./collection');
+
 const updateMePasswordController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
+
     const { password } = request.body;
     const { _id } = request.user;
 
@@ -29,7 +33,7 @@ const updateMePasswordSchema = {
     },
 
     response: {
-        400: 'baseError#',
+        400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation error'),
 
         200: {
             type: 'object',

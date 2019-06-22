@@ -2,13 +2,17 @@ const buildFastify = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
-const requestsDetails = {
-    method: 'POST',
-    url: '/api/v1/registration',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (options) {
+    return {
+        method: 'POST',
+        url: '/api/v1/registration',
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+    }
 };
 let fastify;
 
+const requestsDetails = buildRequest();
 describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
@@ -26,16 +30,18 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
     
     // TESTING MISSING PARAMS IN REQUEST BODY
     test.each([
-        ['email', { password: 'password', confirmPassword: 'password', privacyAccepted: true }],
-        ['password', { email: 'mail@mail.it', confirmPassword: 'password', privacyAccepted: true }],
-        ['confirmPassword', { email: 'mail@mail.it', password: 'password', privacyAccepted: true }],
-        ['privacyAccepted', { email: 'mail@mail.it', password: 'password', confirmPassword: 'password' }]
+        ['email', { payload: { password: 'password', confirmPassword: 'password', privacyAccepted: true } }],
+        ['password', { payload: { email: 'mail@mail.it', confirmPassword: 'password', privacyAccepted: true } }],
+        ['confirmPassword', { payload: { email: 'mail@mail.it', password: 'password', privacyAccepted: true } }],
+        ['privacyAccepted', { payload: { email: 'mail@mail.it', password: 'password', confirmPassword: 'password' } }]
     ])(
     'it should fail for missing params (%s)',
     async (fieldName, body) => {
         expect.assertions(6);
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+            const requestsDetails = buildRequest(body);
+
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(400);
@@ -45,7 +51,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect(payload.fieldName).not.toBeUndefined();
             expect(payload.fieldName).toBe(fieldName);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
@@ -53,14 +59,15 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should fail validation for wrong email format', async () => {
         expect.assertions(6);
 
-        const body = {
+        const body = { payload: {
             email: 'mail',
             password: 'password',
-            confirmPassword: 'password'
-        };
+            confirmPassword: 'password'    
+        }};
 
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+            const requestsDetails = buildRequest(body);
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(400);
@@ -70,7 +77,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect(payload.fieldName).not.toBeUndefined();
             expect(payload.fieldName).toEqual('email');
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
@@ -78,13 +85,15 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should fail validation for mismatching passwords', async () => {
         expect.assertions(4);
         
-        const body = {
+        const body = { payload: {
             email: 'mail@mail.it',
             password: 'password',
             confirmPassword: 'p'
-        };
+        }};
+
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+            const requestsDetails = buildRequest(body);
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
     
             expect(statusCode).toBe(400);
@@ -92,34 +101,35 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect(payload.code).not.toBeUndefined();
             expect(payload.code).toBe(errorTypes.PASSWORD_MISMATCH);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
 
     describe('', () => {
 
-        beforeAll(async () => seedUsers(fastify.mongo.db));
+        beforeAll(async () => await seedUsers(fastify.mongo.db));
 
         test('it should fail for already existing email address', async () => {
             expect.assertions(3);
             
-            const body = {
+            const body = { payload: {
                 email: 'info@crispybacon.it',
                 password: 'password',
                 confirmPassword: 'password',
                 privacyAccepted: true
-            };
+            }};
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const requestsDetails = buildRequest(body);
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(409);
                 expect(payload.code).not.toBeUndefined();
                 expect(payload.code).toBe(errorTypes.ALREADY_EXISTING);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
@@ -127,44 +137,46 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should fail for non accepted privacy', async () => {
             expect.assertions(3);
             
-            const body = {
+            const body = { payload: {
                 email: 'info@crispybacon.it',
                 password: 'password',
                 confirmPassword: 'password',
                 privacyAccepted: false
-            };
+            }};
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const requestsDetails = buildRequest(body);
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(400);
                 expect(payload.code).not.toBeUndefined();
                 expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
 
         test('it should succeed for correct params', async () => {
             expect.assertions(3);
-            const body = {
+            const body = { payload: {
                 email: 'giovanni.rodighiero@crispybacon.it',
                 password: 'password',
                 confirmPassword: 'password',
                 privacyAccepted: true
-            };
+            }};
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const requestsDetails = buildRequest(body);
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(201);
                 expect(payload).not.toBeUndefined();
                 expect(payload.code).toBe('success');
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });

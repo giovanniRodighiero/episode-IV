@@ -1,23 +1,20 @@
-const { errorTypes } = require('../errors/schema');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
 
-const { baseProjection } = require('./collection');
+const { USERS } = require('./collection');
 
 
 const detailsController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
     const { id } = request.params;
 
-    // CHECK FOR VALID ID FORMAT
-    if (!this.mongo.ObjectId.isValid(id)) {
-        reply.code(400);
-        return { code: errorTypes.VALIDATION_ERROR };
-    }
+    let _id, user;
 
-    const _id = new this.mongo.ObjectId(id);
-    const user = await Users.findOne({ _id }, baseProjection);
-    
-    // CHECK FOR EXISTING USER
-    if (!user) {
+    try {
+        _id = new this.mongo.ObjectId(id);
+        user = await Users.findOne({ _id }, USERS.baseProjection);
+        if (!user)
+            throw new Error();
+    } catch (error) {
         reply.code(404);
         return { code: errorTypes.NOT_FOUND };
     }
@@ -42,13 +39,11 @@ const detailsSchema = {
     },
 
     response: {
-        400: 'baseError#',
+        200: USERS.schemas.baseUserSchema,
 
-        403: 'baseError#',
+        403: generateErrorSchema([errorTypes.NOT_AUTHORIZED], 'Operation not allowed for the current user.'),
 
-        404: 'baseError#',
-
-        200: 'baseUser#'
+        404: generateErrorSchema(errorTypes.NOT_FOUND, 'User not found for the provided id.')
     }
 
 };

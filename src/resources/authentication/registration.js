@@ -1,20 +1,25 @@
 const { encrypt } = require('node-password-encrypter');
+const { promisify } = require('util');
 
-const { userRegistrationTemplate } = require('../../emailTemplates');
-const { errorTypes } = require('../errors/schema');
+const { userRegistrationTemplate } = require('../../views/email');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('../users/collection');
 
-
+let signJwt;
 
 const registrationController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
+
     const { email, password } = request.body;
 
+    // FETCH THE USER
     const user = await Users.findOne({ email });
     if (user) {
         reply.code(409);
         return { code: errorTypes.ALREADY_EXISTING };
     }
 
+    // SAVE THE USER WITH ENCRYPTED PASSWORD
     const { salt, encryptedContent } = await encrypt({ content: password, keylen: 128, iterations: 1000 });
     await Users.insertOne({
         email,
@@ -25,32 +30,25 @@ const registrationController = async function (request, reply) {
         privacyAccepted: true
     });
 
-    this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
-        if (err) {
-            console.log(err)
-            reply.code(500);
-            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-        }
+    if (!signJwt)
+        signJwt = promisify(this.jwt.sign);
 
-        this.nodemailer.sendMail({
-            from: this.config.mailer.from,
-            to: email,
-            subject: 'Successful registration',
-            html: userRegistrationTemplate({
-                htmlTitle: 'Registration',
-                activationLink: this.config.address + '/api/v1/confirmation/' + token
-            })
-        }, (err, info) => {
-            if (err) {
-                console.log(err)
-                reply.code(500);
-                reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-            }
-
-            reply.code(201);
-            reply.send({ code: 'success' });
-        });
+    // CREATE A NEW TOKEN TO ALLOW LOGIN SKIP
+    const token = await this.jwt.sign({ account: email }, { expiresIn: '2 days' });
+    
+    // SEND CONFIRMATION ACCOUNT EMAIL
+    await this.nodemailer.sendMail({
+        from: this.config.mailer.from,
+        to: email,
+        subject: 'Successful registration',
+        html: userRegistrationTemplate({
+            htmlTitle: 'Registration',
+            activationLink: `${this.config.address}/api/v1/confirmation/${token}` 
+        })
     });
+
+    reply.code(201);
+    return { code: 'success' };
 };
 
 const registrationSchema = {
@@ -63,9 +61,9 @@ const registrationSchema = {
         type: 'object',
         required: ['email', 'password', 'confirmPassword', 'privacyAccepted'],
         properties: {
-            email: { type: 'string', format: 'email' },
-            password: { type: 'string', transform: ['trim'] },
-            confirmPassword: { const: { '$data': '1/password' } },
+            email: { type: 'string', format: 'email', description: 'User email' },
+            password: { type: 'string', transform: ['trim'], description: 'User password' },
+            confirmPassword: { const: { '$data': '1/password' }, description: 'Confirm user password' },
             privacyAccepted: { type: 'boolean', const: true, description: 'Explicit privacy consent' }
         },
         additionalProperties: false
@@ -76,15 +74,15 @@ const registrationSchema = {
         201: {
             type: 'object',
             required: ['code'],
-            description: 'Successful response',
+            description: 'Registration completed successfully',
             properties: {
                 code: { type: 'string' }
             }
         },
 
-        400: 'baseError#',
+        400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation error'),
 
-        409: 'baseError#'
+        409: generateErrorSchema(errorTypes.ALREADY_EXISTING, 'Email address already in use')
     }
 
 };

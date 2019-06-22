@@ -1,5 +1,4 @@
-const settingsSchema = {
-    $id: 'settings',
+const baseSettingsSchema = {
     type: 'object',
     required: ['meta', 'lang'],
     properties: {
@@ -25,4 +24,6 @@ const settingsSchema = {
     additionalProperties: false
 };
 
-module.exports = settingsSchema;
+module.exports = {
+    baseSettingsSchema
+};

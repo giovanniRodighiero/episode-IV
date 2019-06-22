@@ -1,3 +1,5 @@
+const { SETTINGS } = require('./collection');
+
 // SETTINGS INFO
 const settings = ({ projectName, address }) => ({
     meta: {
@@ -19,7 +21,7 @@ const settings = ({ projectName, address }) => ({
 
 // CLEARS AND SEED THE SETTINGS COLLECTION
 async function seedSettings (database, config) {
-    const Settings = database.collection('settings');
+    const Settings = database.collection(SETTINGS.collectionName);
     try {
         await Settings.deleteMany({});
 

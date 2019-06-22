@@ -4,7 +4,7 @@ const secureConfirmedAccount = require('../../middlewares/confirmedAccount');
 
 const { uploadImageController, uploadImageSchema } = require('./uploadImage');
 
-const initUploader = fastify => {
+const initUploader = async function (fastify) {
 
     fastify.post('/api/v1/uploader', {
         preValidation: [ secureAuth, secureConfirmedAccount ],

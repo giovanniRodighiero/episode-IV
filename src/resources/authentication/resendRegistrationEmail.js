@@ -1,15 +1,19 @@
-const { userRegistrationTemplate } = require('../../emailTemplates');
-const { errorTypes } = require('../errors/schema');
+const { promisify } = require('util');
 
+const { userRegistrationTemplate } = require('../../views/email');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('../users/collection');
+
+let signJwt;
 
 const resendRegistrationEmailController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
     const { email } = request.body;
 
     const user = await Users.findOne({ email });
     if (!user) {
         reply.code(404);
-        return { code: errorTypes.NOT_FOUND };
+        return { code: errorTypes.NOT_FOUND, fieldName: 'email' };
     }
 
     if (user.accountConfirmed) {
@@ -17,33 +21,22 @@ const resendRegistrationEmailController = async function (request, reply) {
         return { code: errorTypes.ALREADY_ACTIVE };
     }
 
-    this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
-        if (err) {
-            console.log(err)
-            reply.code(500);
-            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-        }
+    if (!signJwt)
+        signJwt = promisify(this.jwt.sign);
 
-        this.nodemailer.sendMail({
-            from: this.config.mailer.from,
-            to: email,
-            subject: 'Successful registration',
-            html: userRegistrationTemplate({
-                htmlTitle: 'Registration',
-                activationLink: this.config.address + '/api/v1/confirmation/' + token
-            })
-        }, (err, info) => {
-            if (err) {
-                console.log(err)
-                reply.code(500);
-                reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-            }
-
-            reply.code(200);
-            reply.send({ code: 'success' });
-        });
-
+    const token = await this.jwt.sign({ account: email }, { expiresIn: '2 days' });
+    await this.nodemailer.sendMail({
+        from: this.config.mailer.from,
+        to: email,
+        subject: 'Successful registration',
+        html: userRegistrationTemplate({
+            htmlTitle: 'Registration',
+            activationLink: this.config.address + '/api/v1/confirmation/' + token
+        })
     });
+    
+    reply.code(200);
+    return { code: 'success' };
 };
 
 const resendRegistrationEmailSchema = {
@@ -71,11 +64,11 @@ const resendRegistrationEmailSchema = {
             }
         },
 
-        400: 'baseError#',
+        400: generateErrorSchema([errorTypes.VALIDATION_ERROR, errorTypes.MISSING_PARAM], 'Validation error'),
 
-        403: 'baseError#',
+        403: generateErrorSchema(errorTypes.ALREADY_ACTIVE, 'The user is already active'),
 
-        404: 'baseError#'
+        404: generateErrorSchema(errorTypes.NOT_FOUND, 'User not found for the specified email address')
 
     }
 };

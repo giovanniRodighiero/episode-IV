@@ -2,7 +2,7 @@ const indexes = [
     [ { code: 1 }, { unique: true } ]
 ];
 
-const initPages = async fastify => {
+const initPages = async function (fastify) {
 
     try {
         const Pages = fastify.mongo.db.collection('pages');

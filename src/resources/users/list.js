@@ -1,9 +1,9 @@
 const PER_PAGE = 20;
 
-const { baseProjection } = require('./collection');
+const { USERS } = require('./collection');
 
 const listController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
 
     // PAGINATION OPTIONS
     const { perPage = PER_PAGE , page, sort, sortDir } = request.query;
@@ -15,7 +15,7 @@ const listController = async function (request, reply) {
             .sort({ [sort]: sortDir })
             .skip((page - 1) * perPage)
             .limit(perPage)
-            .project(baseProjection)
+            .project(USERS.baseProjection)
             .toArray(),
     ]);
 
@@ -82,7 +82,7 @@ const listSchema = {
                 data: {
                     type: 'array',
                     uniqueItems: true,
-                    items: 'baseUser#'
+                    items: USERS.schemas.baseUserSchema
                 }
             },
             description: 'List of all users with pagination and filters'

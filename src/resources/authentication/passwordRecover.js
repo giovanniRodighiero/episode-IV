@@ -1,8 +1,15 @@
-const { userRegistrationTemplate } = require('../../emailTemplates');
-const { errorTypes } = require('../errors/schema');
+const { promisify } = require('util');
+
+const { userRegistrationTemplate } = require('../../views/email');
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('../users/collection');
+
+
+let signJwt;
 
 const passwordRecoverController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
+
     const { email } = request.body;
 
     const user = await Users.findOne({ email });
@@ -18,32 +25,25 @@ const passwordRecoverController = async function (request, reply) {
         return { code: errorTypes.NOT_AUTHORIZED };
     }
 
-    this.jwt.sign({ account: email }, { expiresIn: '2 days' }, (err, token) => {
-        if (err) {
-            console.log(err)
-            reply.code(500);
-            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-        }
+    if (!signJwt)
+        signJwt = promisify(this.jwt.sign);
 
-        this.nodemailer.sendMail({
-            from: this.config.mailer.from,
-            to: email,
-            subject: 'Password recovery',
-            html: userRegistrationTemplate({
-                htmlTitle: 'Password Recovery',
-                activationLink: this.config.address + '/api/v1/recovery/' + token
-            })
-        }, (err, info) => {
-            if (err) {
-                console.log(err)
-                reply.code(500);
-                reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-            }
+    // SIGN JWT
+    const token = await signJwt({ account: email }, { expiresIn: '2 days' });
 
-            reply.code(200);
-            reply.send({ code: 'success' });
-        });
-    }); 
+    // SEND RECOVER EMAIL
+    await this.nodemailer.sendMail({
+        from: this.config.mailer.from,
+        to: email,
+        subject: 'Password recovery',
+        html: userRegistrationTemplate({
+            htmlTitle: 'Password Recovery',
+            activationLink: `${this.config.address}/api/v1/recovery/${token}`
+        })
+    });
+
+    reply.code(200);
+    return { code: 'success' };
 
 
 };
@@ -57,10 +57,9 @@ const passwordRecoverSchema = {
         type: 'object',
         required: ['email'],
         properties: {
-            email: { type: 'string', format: 'email', transform: ['trim', 'toLowerCase'] }
+            email: { type: 'string', format: 'email', transform: ['trim', 'toLowerCase'], description: 'User email' }
         },
-        additionalProperties: false,
-        description: 'Email of the account to send the recover password email.'
+        additionalProperties: false
     },
 
     response: {
@@ -72,7 +71,11 @@ const passwordRecoverSchema = {
             }
         },
 
-        404: 'baseError#'
+        400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation error'),
+
+        403: generateErrorSchema(errorTypes.NOT_AUTHORIZED, 'Account not confirmed'),
+
+        404: generateErrorSchema(errorTypes.NOT_FOUND, 'User not found')
     }
 };
 

@@ -1,23 +1,30 @@
 const { compare } = require('node-password-encrypter');
-const { errorTypes } = require('../errors/schema');
+const { promisify } = require('util');
 
+const { errorTypes, generateErrorSchema } = require('../errors/schema');
+const { USERS } = require('../users/collection');
 
+let signJwt;
 
 const loginController = async function (request, reply) {
-    const Users = this.mongo.db.collection('users');
+    const Users = this.mongo.db.collection(USERS.collectionName);
+
     const { email, password } = request.body;
 
+    // FETCH THE USER
     const user = await Users.findOne({ email }, { password: 1, email: 1, accountConfirmed: 1 });
     if (!user) {
         reply.code(404);
-        return { code: errorTypes.NOT_FOUND };
+        return { code: errorTypes.NOT_FOUND, fieldName: 'email' };
     }
 
+    // ACCOUNT NOT CONFIRMED
     if (!user.accountConfirmed) {
         reply.code(403);
         return { code: errorTypes.NOT_CONFIRMED };
     }
 
+    // PASSWORD COMPARISON
     const passwordsEqual = await compare({
         content: password,
         encryptedContent: user.password,
@@ -30,8 +37,11 @@ const loginController = async function (request, reply) {
         return { code: errorTypes.WRONG_PASSWORD };
     }
 
+    if (!signJwt)
+        signJwt = promisify(this.jwt.sign);
+
     // GENERATING NEW ACCESS TOKEN
-    this.jwt.sign(
+    const token = await this.jwt.sign(
         {
             email: user.email,
             _id: user._id,
@@ -39,16 +49,10 @@ const loginController = async function (request, reply) {
         },
         {
             expiresIn: '60 days'
-        },
-    (err, token) => {
-        if (err) {
-            reply.code(500);
-            return err;
-        }
+        });
 
-        reply.code(200);
-        reply.send({ token, user });
-    });
+    reply.code(200);
+    return { token, user };
 };
 
 const loginSchema = {
@@ -74,15 +78,15 @@ const loginSchema = {
             required: ['token', 'user'],
             properties: {
                 token: { type: 'string' },
-                user: 'baseUser#'
+                user: USERS.schemas.baseUserSchema
             }
         },
 
-        400: 'baseError#',
+        400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation error'),
 
-        401: 'baseError#',
+        401: generateErrorSchema([errorTypes.NOT_AUTHENTICATED, errorTypes.WRONG_PASSWORD], 'Not authenticated or wrong password'),
 
-        404: 'baseError#'
+        404: generateErrorSchema(errorTypes.NOT_FOUND, 'User not found')
     }
 
 };

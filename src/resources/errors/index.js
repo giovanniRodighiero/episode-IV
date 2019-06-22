@@ -1,12 +1,12 @@
 const { baseErrorSchema, errorTypes } = require('./schema');
 
 
-function initErrors (fastify) {
+async function initErrors (fastify) {
 
     fastify.addSchema(baseErrorSchema);
 
     fastify.setErrorHandler(async (error, request, reply) => {
-        
+
         if (error.validation) {
 
             const [ validationError ] = error.validation;
@@ -45,14 +45,11 @@ function initErrors (fastify) {
             }
         }
 
-        console.log(error)
+        request.log.error(error);
         reply.code(500);
         return { code: errorTypes.INTERNAL_SERVER_ERROR }; 
 
     });
-
 };
-
-
 
 module.exports = initErrors;

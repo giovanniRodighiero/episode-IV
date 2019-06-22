@@ -1,5 +1,7 @@
+const { SETTINGS } = require('./collection');
+
 const detailsController = async function (request, reply) {
-    const Settings = this.mongo.db.collection('settings');
+    const Settings = this.mongo.db.collection(SETTINGS.collectionName);
 
     const settings = await Settings.findOne({ });
 
@@ -13,7 +15,7 @@ const detailsSchema = {
     tags: ['Settings'],
 
     response: {
-        200: 'settings#'
+        200: SETTINGS.schemas.baseSettingsSchema
     }
 };
 

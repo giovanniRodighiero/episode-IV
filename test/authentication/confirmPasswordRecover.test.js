@@ -2,19 +2,19 @@ const buildFastify = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
-
-const requestsDetails = {
-    method: 'POST',
-    url: '/api/v1/confirm-password-recover',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (options) {
+    return {
+        method: 'POST',
+        url: '/api/v1/confirm-password-recover',
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+    }
 };
 let fastify;
 
-function sleep(ms = 0) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
-
+const requestsDetails = buildRequest();
 describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
@@ -27,15 +27,17 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
     });
 
     test.each([
-        ['token', { password: 'password', confirmPassword: 'password' }],
-        ['password', { confirmPassword: 'password', token: 'token' }],
-        ['confirmPassword', { password: 'password', token: 'token' }]
+        ['token', { payload: { password: 'password', confirmPassword: 'password' } }],
+        ['password', { payload: { confirmPassword: 'password', token: 'token' } }],
+        ['confirmPassword', { payload: { password: 'password', token: 'token' } }]
     ])('it should fail for missing params (%s)',
         async (fieldName, body) => {
             expect.assertions(6);
 
+            const requestsDetails = buildRequest(body);
+
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body, });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(400);
@@ -45,7 +47,7 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
                 expect(payload.fieldName).not.toBeUndefined();
                 expect(payload.fieldName).toBe(fieldName);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         }
@@ -54,9 +56,11 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
     test('it should fail for invalid token', async () => {
         expect.assertions(4);
 
-        const body = { token: 'token', password: 'pass', confirmPassword: 'pass' };
+        const body = { payload: { token: 'token', password: 'pass', confirmPassword: 'pass' } };
+        const requestsDetails = buildRequest(body);
+
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(400);
@@ -64,7 +68,7 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
             expect(payload.code).toBe(errorTypes.VALIDATION_ERROR);
             expect(payload.fieldName).toBe('token');
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
 
@@ -75,17 +79,18 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
 
         fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: 1 }, async (err, token) => {
             await sleep(2000);
-            const body = { token, password: 'pass', confirmPassword: 'pass' };
+            const body = { payload: { token, password: 'pass', confirmPassword: 'pass' } };
+            const requestsDetails = buildRequest(body);
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(403);
                 expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
                 done();
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
                 done();        
             }
@@ -100,16 +105,18 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
             expect.assertions(2);
     
             fastify.jwt.sign({ account: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token, password: 'pass', confirmPassword: 'pass' };
+                const body = { payload: { token, password: 'pass', confirmPassword: 'pass' } };
+                const requestsDetails = buildRequest(body);
+
                 try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                    const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                     const payload = JSON.parse(_payload);
         
                     expect(statusCode).toBe(404);
                     expect(payload.code).toBe(errorTypes.NOT_FOUND);
                     done();
                 } catch (error) {
-                    console.log(error);
+                    fastify.log.error(error);
                     expect(error).toBeUndefined();            
                 }
     
@@ -120,16 +127,18 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
             expect.assertions(2);
     
             fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
-                const body = { token, password: 'newPassword', confirmPassword: 'newPassword' };
+                const body = { payload: { token, password: 'newPassword', confirmPassword: 'newPassword' } };
+                const requestsDetails = buildRequest(body);
+
                 try {
-                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                    const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                     const payload = JSON.parse(_payload);
         
                     expect(statusCode).toBe(200);
                     expect(payload.code).toBe('success');
                     done();
                 } catch (error) {
-                    console.log(error);
+                    fastify.log.error(error);
                     expect(error).toBeUndefined();            
                 }
     

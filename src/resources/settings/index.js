@@ -3,18 +3,18 @@ const secureAuth = require('../../middlewares/authentication');
 const secureConfirmedAccount = require('../../middlewares/confirmedAccount');
 const secureRole = require('../../middlewares/role');
 
-const settingsSchema = require('./schema');
-
 // CONTROLLERS
 const { detailsController, detailsSchema } = require('./details');
 const { updateController, updateSchema } = require('./update');
 
-const initSettings = fastify => {
+const { ensureIndexes } = require('./collection');
+
+async function initSettings (fastify) {
 
     const { userRoles } = fastify.config;
 
-    fastify.addSchema(settingsSchema);
-
+    await ensureIndexes(fastify);
+    
     fastify.get('/api/v1/settings', {
         preValidation: [ secureAuth, secureConfirmedAccount, secureRole(userRoles.SUPERADMIN) ],
         schema: detailsSchema

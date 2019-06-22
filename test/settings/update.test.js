@@ -5,13 +5,17 @@ const { seedSettings } = require('../../src/resources/settings/seed');
 
 const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImluZm9AY3Jpc3B5YmFjb24uaXQifQ.pihOQQp-7P1yWWxMs8GsrIkPV6p_JFzAwZhBo-GnISg';
 
-const requestsDetails = {
-    method: 'PUT',
-    url: '/api/v1/settings',
-    headers: { 'Content-Type': 'application/json' }
+function buildRequest (token, options) {
+    return {
+        method: 'PUT',
+        url: '/api/v1/settings',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        ...options
+    }
 };
 let fastify, token, tokenUser;
 
+const requestsDetails = buildRequest();
 describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.url}`, () => {
 
     beforeAll(async () => {
@@ -26,17 +30,17 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
     test('it should fail for invalid token', async () => {
         expect.assertions(2);
         
-        requestsDetails.headers['Authorization'] = 'Bearer ' + fakeToken;
-        const body = { foo: '' };
+        const body = { payload: { foo: '' } };
+        const requestsDetails = buildRequest(fakeToken, body);
 
         try {
-            const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+            const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(401);
             expect(payload.code).toBe(errorTypes.NOT_AUTHENTICATED);
         } catch (error) {
-            console.log(error);
+            fastify.log.error(error);
             expect(error).toBeUndefined();
         }
     });
@@ -68,17 +72,16 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
         test('it should fail for too low account role', async () => {
             expect.assertions(2);
 
-            requestsDetails.headers['Authorization'] = 'Bearer ' + tokenUser;
-            const body = { foo: '' };
-
+            const body = { payload: { foo: '' } };
+            const requestsDetails = buildRequest(tokenUser, body);
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(403);
                 expect(payload.code).toBe(errorTypes.NOT_AUTHORIZED);
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });
@@ -88,18 +91,18 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
         test('it should fail for missing params (meta)', async () => {
             expect.assertions(3);
 
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
-            const body = {  };
+            const body = { payload: {} };
+            const requestsDetails = buildRequest(token, body);
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(400);
                 expect(payload.code).toBe(errorTypes.MISSING_PARAM);
                 expect(payload.fieldName).toBe('meta');
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
 
@@ -109,8 +112,8 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
         test('it should fail for missing params (meta.title)', async () => {
             expect.assertions(3);
 
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
-            const body = { meta: { } };
+            const body = { payload: { meta: { } } };
+            const requestsDetails = buildRequest(token, body);
 
             try {
                 const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
@@ -128,9 +131,8 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
         test('it should succeed for correct params and account permissions ', async () => {
             expect.assertions(4);
 
-            requestsDetails.headers['Authorization'] = 'Bearer ' + token;
             const projectName = 'new name'
-            const body = {
+            const body = { payload: {
                 meta: {
                     image: '',
                     
@@ -146,10 +148,12 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
                     twitterDescription: `${projectName} - twitter description`,
                 },
                 lang: 'en'
-            };
+            }};
+
+            const requestsDetails = buildRequest(token, body);
 
             try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
+                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(200);
@@ -157,7 +161,7 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
                 expect(payload.meta.title).toBe(`${projectName} - meta title`);
                 expect(payload.lang).toBe('en');
             } catch (error) {
-                console.log(error);
+                fastify.log.error(error);
                 expect(error).toBeUndefined();
             }
         });

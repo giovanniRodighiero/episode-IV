@@ -1,5 +1,5 @@
-const fastify = require('fastify')();
 const fastifyMongoDb = require('fastify-mongodb');
+const fastifyPlugin = require('fastify-plugin');
 const jwt = require('fastify-jwt');
 const fastifyNodeMailer = require('fastify-nodemailer');
 const fastifySwagger = require('fastify-swagger');
@@ -11,18 +11,22 @@ const multipart = require('fastify-multipart');
 
 const resolve = path.resolve;
 
-
 const allConfigs = require('./config');
 const swaggerConfig = require('./src/services/swagger');
+const pinoConfig = require('./src/services/pino');
 
-const initRoutes = require('./src/resources');
 
+const ALLOWED_ENVIRONMENT = Object.keys(allConfigs);
 
 // SET UP CORRECT ENV VARIABLE WITH DEFAULT
-if (!process.env.NODE_ENV || !['test', 'development', 'production'].includes(process.env.NODE_ENV))
+if (!process.env.NODE_ENV || !ALLOWED_ENVIRONMENT.includes(process.env.NODE_ENV))
 process.env.NODE_ENV = 'development';
 console.log('NODE_ENV set to ', process.env.NODE_ENV);
 
+// SET UP LOGGER
+const fastify = require('fastify')({
+    logger: pinoConfig[process.env.NODE_ENV]
+});
 
 // SETUP AJV KEYWORDS
 const ajv = new Ajv({
@@ -35,7 +39,11 @@ require('ajv-keywords')(ajv, 'transform');
 
 
 // SERVER BOOT FUNCTION
-async function buildFastify () {
+function buildFastify () {
+    // CATCH UNHANDLEDREJECTION
+    process.on('unhandledRejection', function (error) {
+        fastify.log.error(error);
+    });
 
     // MULTIPART TO HANDLE FILE UPLOAD
     fastify.register(multipart);
@@ -82,18 +90,18 @@ async function buildFastify () {
         url: fastify.config.database.url
     });
 
+    // REGISTER ROUTES/CUSTOM PLUGINS
+    
+    // misc
+    fastify.register(fastifyPlugin(require('./src/resources/errors'), { name: 'errors' }));
+    fastify.register(require('./src/resources/users'), { name: 'users' });
+    fastify.register(require('./src/resources/authentication'), { name: 'authentication' });
+    fastify.register(require('./src/resources/settings'), { name: 'settings' });
+    fastify.register(require('./src/resources/uploader'), { name: 'uploader' });
 
-    fastify.after(async err => {
-        if (err) throw err;
-
-        try {
-            console.log('Connected to ' + fastify.config.database.url + '\n');
-
-            // REST APIs REGISTRATION
-            await initRoutes(fastify);
-
-        } catch (error) { throw err; }
-    });
+    // cms
+    fastify.register(require('./src/resources/pages'), { name: 'pages' } );
+    fastify.register(require('./src/resources/homepage'), { name: 'homepage' } );
 
     return fastify;
 };

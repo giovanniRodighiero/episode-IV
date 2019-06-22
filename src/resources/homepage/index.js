@@ -10,7 +10,7 @@ const { detailsController, detailsSchema } = require('./details');
 const { updateController, updateSchema } = require('./update');
 const { frontendController } = require('./frontend');
 
-function initHomepage (fastify) {
+const initHomepage = async function (fastify) {
     const { userRoles } = fastify.config;
 
     fastify.addSchema(homepageSchema);
