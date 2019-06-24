@@ -1,19 +1,11 @@
-const { errorTypes } = require('../resources/errors/schema');
+const { SETTINGS } = require('../resources/settings/collection');
 
-const settingsMiddleware = function (request, reply, next) {
-    const Settings = this.mongo.db.collection('settings');
+const settingsMiddleware = async function (request, reply, next) {
+    const Settings = this.mongo.db.collection(SETTINGS.collectionName);
 
-    Settings.findOne({ })
-        .then(settings => {
-            console.log(settings)
-            request.settings = settings;
-            next();
-        })
-        .catch(error => {
-            console.log(error);
-            reply.status(500);
-            reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-        });
+    const settings = await Settings.findOne({ });
+    request.settings = settings;
+    return;
 };
 
 module.exports = settingsMiddleware;
