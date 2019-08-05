@@ -1,4 +1,7 @@
+const config = require('../../../config');
 const { baseSettingsSchema } = require('../settings/schema');
+
+const { availableLangs } = config[process.env.NODE_ENV || 'development'];
 
 const baseHomepageSchema = {
     type: 'object',
@@ -54,6 +57,18 @@ const baseHomepageSchema = {
     },
 };
 
+const baseHomepageSchemaWithLangs = {
+    type: 'object',
+    required: [],
+    properties: {}
+};
+
+availableLangs.forEach(lang => {
+    baseHomepageSchemaWithLangs.required.push(lang);
+    baseHomepageSchemaWithLangs.properties[lang] = baseHomepageSchema; 
+});
+
 module.exports = {
+    baseHomepageSchemaWithLangs,
     baseHomepageSchema
 };

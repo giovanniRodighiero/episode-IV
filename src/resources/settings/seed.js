@@ -1,31 +1,36 @@
 const { SETTINGS } = require('./collection');
 
 // SETTINGS INFO
-const settings = ({ projectName, address }) => ({
+const getSettingsSeed = ({ projectName, address, lang }) => ({
     meta: {
         image: `${address}/public/images/uploads/placeholder.png`,
-        title: `${projectName} - meta title`,
-        description: `${projectName} - meta description`,
+        title: `[${lang}] ${projectName} - meta title`,
+        description: `[${lang}] ${projectName} - meta description`,
 
         ogUrl: `${projectName} - og url`,
-        ogTitle: `${projectName} - og title`,
-        ogDescription: `${projectName} - og description`,
+        ogTitle: `[${lang}] ${projectName} - og title`,
+        ogDescription: `[${lang}] ${projectName} - og description`,
 
         twitterUrl: `${projectName} - twitter url`,
-        twitterTitle: `${projectName} - twitter title`,
-        twitterDescription: `${projectName} - twitter description`,
-    },
-    lang: 'it'
+        twitterTitle: `[${lang}] ${projectName} - twitter title`,
+        twitterDescription: `[${lang}] ${projectName} - twitter description`,
+    }
 });
 
+const settingsWithLangs = {  };
 
 // CLEARS AND SEED THE SETTINGS COLLECTION
 async function seedSettings (database, config) {
     const Settings = database.collection(SETTINGS.collectionName);
+
+    // push the seed data for each lang
+    const { availableLangs } = config;
+    availableLangs.forEach(lang => settingsWithLangs[lang] = getSettingsSeed({ ...config, lang }));
+
     try {
         await Settings.deleteMany({});
 
-        await Settings.insertOne(settings(config));
+        await Settings.insertOne(settingsWithLangs);
 
         console.log('seeding settings done, no errors');
         return true;
@@ -36,6 +41,6 @@ async function seedSettings (database, config) {
 
 
 module.exports = {
-    settings,
+    settingsWithLangs,
     seedSettings
 };

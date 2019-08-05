@@ -1,28 +1,28 @@
 const loremIpsum = require('lorem-ipsum').loremIpsum;
 
-const homepage = {
-    code: 'homepage',
+const { HOMEPAGE } = require('./collection');
 
+const getHomepageSeed = lang => ({
     meta: {
         image: '',
-        title: `homepage - meta title`,
-        description: `homepage - meta description`,
+        title: `[${lang}] homepage - meta title`,
+        description: `[${lang}] homepage - meta description`,
 
-        ogUrl: `homepage - og url`,
-        ogTitle: `homepage - og title`,
-        ogDescription: `homepage - og description`,
+        ogUrl: `[${lang}] homepage - og url`,
+        ogTitle: `[${lang}] homepage - og title`,
+        ogDescription: `[${lang}] homepage - og description`,
 
-        twitterUrl: `homepage - twitter url`,
-        twitterTitle: `homepage - twitter title`,
-        twitterDescription: `homepage - twitter description`,
+        twitterUrl: `[${lang}] homepage - twitter url`,
+        twitterTitle: `[${lang}] homepage - twitter title`,
+        twitterDescription: `[${lang}] homepage - twitter description`,
     },
 
     hero: {
         imageDesktop: 'https://source.unsplash.com/1600x900',
         imageMobile: 'https://source.unsplash.com/960x1600',
-        title: loremIpsum({ count: 3, units: 'words' }),
-        subtitle: loremIpsum({ count: 10, units: 'words' }),
-        description: loremIpsum({ count: 3, units: 'sentences' })
+        title: `[${lang}] ` + loremIpsum({ count: 3, units: 'words' }),
+        subtitle: `[${lang}]` + loremIpsum({ count: 10, units: 'words' }),
+        description: `[${lang}]` + loremIpsum({ count: 3, units: 'sentences' })
     },
 
     services: {
@@ -53,17 +53,22 @@ const homepage = {
         title: loremIpsum({ count: 5, units: 'words' }),
         link: '#'
     }
-};
+});
 
+const homepageWithLangs = { code: HOMEPAGE.code };
 
 // CLEARS AND SEED THE HOMEPAGE PAGE
 async function seedHomepage (database, config) {
-    const Pages = database.collection('pages');
+    const Pages = database.collection(HOMEPAGE.collectionName);
+    
+    // push the seed data for each lang
+    const { availableLangs } = config;
+    availableLangs.forEach(lang => homepageWithLangs[lang] = getHomepageSeed(lang));
 
     try {
-        await Pages.deleteOne({ code: 'homepage' });
+        await Pages.deleteOne({ code: HOMEPAGE.code });
 
-        await Pages.insertOne(homepage);
+        await Pages.insertOne(homepageWithLangs);
 
         console.log('seeding homepage done, no errors');
         return true;
@@ -73,6 +78,6 @@ async function seedHomepage (database, config) {
 };
 
 module.exports = {
-    homepage,
+    homepageWithLangs,
     seedHomepage
 };

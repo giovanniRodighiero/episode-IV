@@ -6,7 +6,7 @@ const { seedHomepage } = require('../src/resources/homepage/seed');
 
 const allConfigs = require('../config');
 
-const config = allConfigs[process.env.NODE_ENV];
+const config = allConfigs[process.env.NODE_ENV || 'development'];
 
 
 MongoClient.connect(config.database.url, { useNewUrlParser: true }, async function(error, client) {
@@ -20,9 +20,9 @@ MongoClient.connect(config.database.url, { useNewUrlParser: true }, async functi
     const db = client.db(config.database.name);
     try {
 
-        await seedUsers(db);
+        await seedUsers(db, config);
         await seedSettings(db, config);
-        await seedHomepage(db);
+        await seedHomepage(db, config);
 
         client.close();
         

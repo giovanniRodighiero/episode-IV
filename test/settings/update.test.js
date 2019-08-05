@@ -14,6 +14,19 @@ function buildRequest (token, options) {
     }
 };
 let fastify, token, tokenUser;
+const metaObject = {
+    image: `....`,
+    title: `title`,
+    description: `meta description`,
+
+    ogUrl: `og url`,
+    ogTitle: `og title`,
+    ogDescription: `og description`,
+
+    twitterUrl: `twitter url`,
+    twitterTitle: `twitter title`,
+    twitterDescription: `twitter description`,
+};
 
 const requestsDetails = buildRequest();
 describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.url}`, () => {
@@ -86,69 +99,36 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
             }
         });
 
+        test('it should fail for missing lang param', async () => {
+            expect(3 * fastify.config.availableLangs.length);
 
+            for (const lang of fastify.config.availableLangs) {
+                const body = { payload: {  } };
 
-        test('it should fail for missing params (meta)', async () => {
-            expect.assertions(3);
+                fastify.config.availableLangs.forEach(lang => body.payload[lang] = { meta: metaObject });
+                delete body.payload[lang];
 
-            const body = { payload: {} };
-            const requestsDetails = buildRequest(token, body);
+                const requestsDetails = buildRequest(token, body);
 
-            try {
-                const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
-                const payload = JSON.parse(_payload);
+                try {
+                    const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, body });
+                    const payload = JSON.parse(_payload);
 
-                expect(statusCode).toBe(400);
-                expect(payload.code).toBe(errorTypes.MISSING_PARAM);
-                expect(payload.fieldName).toBe('meta');
-            } catch (error) {
-                fastify.log.error(error);
-                expect(error).toBeUndefined();
+                    expect(statusCode).toBe(400);
+                    expect(payload.code).toBe(errorTypes.MISSING_PARAM);
+                    expect(payload.fieldName).toBe(lang);
+                } catch (error) {
+                    console.log(error);
+                    expect(error).toBeUndefined();
+                }
             }
-
-        });
-
-
-        test('it should fail for missing params (meta.title)', async () => {
-            expect.assertions(3);
-
-            const body = { payload: { meta: { } } };
-            const requestsDetails = buildRequest(token, body);
-
-            try {
-                const { statusCode, payload: _payload } = await fastify.inject({ ...requestsDetails, payload: body });
-                const payload = JSON.parse(_payload);
-
-                expect(statusCode).toBe(400);
-                expect(payload.code).toBe(errorTypes.MISSING_PARAM);
-                expect(payload.fieldName).toBe('image');
-            } catch (error) {
-                console.log(error);
-                expect(error).toBeUndefined();
-            }
-        });
+        })
 
         test('it should succeed for correct params and account permissions ', async () => {
-            expect.assertions(4);
+            expect.assertions((2 * fastify.config.availableLangs.length) + 1);
 
-            const projectName = 'new name'
-            const body = { payload: {
-                meta: {
-                    image: '',
-                    
-                    title: `${projectName} - meta title`,
-                    description: `${projectName} - meta description`,
-            
-                    ogUrl: `${projectName} - og url`,
-                    ogTitle: `${projectName} - og title`,
-                    ogDescription: `${projectName} - og description`,
-            
-                    twitterUrl: `${projectName} - twitter url`,
-                    twitterTitle: `${projectName} - twitter title`,
-                    twitterDescription: `${projectName} - twitter description`,
-                },
-                lang: 'en'
-            }};
+            const body = { payload: {} };
+            fastify.config.availableLangs.forEach(lang => body.payload[lang] = { meta: metaObject });
 
             const requestsDetails = buildRequest(token, body);
 
@@ -157,9 +137,10 @@ describe(`SETTINGS UPDATE testing ${requestsDetails.method} ${requestsDetails.ur
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(200);
-                expect(payload.meta).toBeInstanceOf(Object);
-                expect(payload.meta.title).toBe(`${projectName} - meta title`);
-                expect(payload.lang).toBe('en');
+                for (const lang of fastify.config.availableLangs) {
+                    expect(payload[lang].meta).toBeInstanceOf(Object);
+                    expect(payload[lang].meta.title).toBe(metaObject.title);
+                }
             } catch (error) {
                 fastify.log.error(error);
                 expect(error).toBeUndefined();

@@ -7,7 +7,7 @@ const settingsMiddleware = require('../../middlewares/settings');
 // CONTROLLER
 const { detailsController, detailsSchema } = require('./details');
 const { updateController, updateSchema } = require('./update');
-const { frontendController } = require('./frontend');
+const { frontendController, frontendSchema } = require('./frontend');
 
 const initHomepage = async function (fastify) {
     const { userRoles } = fastify.config;
@@ -22,8 +22,9 @@ const initHomepage = async function (fastify) {
         schema: updateSchema
     }, updateController);
 
-    fastify.get('/', {
-        preHandler: settingsMiddleware
+    fastify.get('/:lang', {
+        preHandler: settingsMiddleware,
+        schema: frontendSchema
     }, frontendController);
 
 };

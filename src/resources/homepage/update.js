@@ -7,12 +7,14 @@ const updateController = async function (request, reply) {
 
     const { value: oldHomepage } = await Pages.findOneAndUpdate({ code: HOMEPAGE.code }, { $set: request.body });
 
-    try {
-        await replaceOldImages(request.body.meta.image, oldHomepage.meta.image);
-        await replaceOldImages(request.body.hero.imageDesktop, oldHomepage.hero.imageDesktop);
-        await replaceOldImages(request.body.hero.imageMobile, oldHomepage.hero.imageMobile);
-    } catch (error) {
-        this.log.error('error replacing one of the images', error);
+    for (const lang of this.config.availableLangs) {
+        try {
+            await replaceOldImages(request.body[lang].meta.image, oldHomepage[lang].meta.image);
+            await replaceOldImages(request.body[lang].hero.imageDesktop, oldHomepage[lang].hero.imageDesktop);
+            await replaceOldImages(request.body[lang].hero.imageMobile, oldHomepage[lang].hero.imageMobile);
+        } catch (error) {
+            this.log.error('error replacing one of the images', error);
+        }
     }
 
     reply.code(200);
@@ -24,10 +26,10 @@ const updateSchema = {
     description: 'Updates the homepage informations',
     tags: ['Homepage'],
 
-    body: HOMEPAGE.schemas.baseHomepageSchema,
+    body: HOMEPAGE.schemas.baseHomepageSchemaWithLangs,
 
     response: {
-        200: HOMEPAGE.schemas.baseHomepageSchema,
+        200: HOMEPAGE.schemas.baseHomepageSchemaWithLangs,
 
         400: generateErrorSchema([errorTypes.MISSING_PARAM, errorTypes.VALIDATION_ERROR], 'Validation error')
     }

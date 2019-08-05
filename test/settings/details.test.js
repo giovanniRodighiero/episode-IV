@@ -87,7 +87,8 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
         });
 
         test('it should succeed for correct account role', async () => {
-            expect.assertions(5);
+            const { availableLangs } = fastify.config;
+            expect.assertions(1 + (4 * availableLangs.length));
 
             const requestsDetails = buildRequest(token);
             try {
@@ -95,10 +96,13 @@ describe(`SETTINGS DETAILS testing ${requestsDetails.method} ${requestsDetails.u
                 const payload = JSON.parse(_payload);
     
                 expect(statusCode).toBe(200);
-                expect(typeof payload.meta).toBe('object');
-                expect(payload.meta.title).not.toBeNull();
-                expect(payload.meta.description).not.toBeNull();
-                expect(typeof payload.lang).toBe('string');
+                for (const lang of availableLangs) {
+                    expect(typeof payload[lang]).toBe('object');
+                    expect(typeof payload[lang].meta).toBe('object');
+                    expect(payload[lang].meta.title).not.toBeNull();
+                    expect(payload[lang].meta.description).not.toBeNull();
+                }
+
             } catch (error) {
                 fastify.log.error(error);
                 expect(error).toBeUndefined();

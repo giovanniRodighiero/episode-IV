@@ -21,7 +21,7 @@ const detailsSchema = {
     tags: ['Pages'],
 
     response: {
-        200: HOMEPAGE.schemas.baseHomepageSchema,
+        200: HOMEPAGE.schemas.baseHomepageSchemaWithLangs,
 
         404: generateErrorSchema(errorTypes.NOT_FOUND, 'Page not found')
     }

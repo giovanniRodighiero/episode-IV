@@ -9,7 +9,7 @@ const userRoles = {
     ADMIN: 80,
     USER: 70
 };
-
+const availableLangs = ['it', 'en'];
 
 
 /************ CONFIGURATIONS ************/
@@ -35,7 +35,8 @@ const test = {
         },
         from: 'noreply@crispybacon.it'
     },
-    address: `http://localhost:${port}`
+    address: `http://localhost:${port}`,
+    availableLangs
 }
 
 // DEVELOPMENT CONFIG
@@ -59,7 +60,8 @@ const development = {
         },
         from: 'noreply@crispybacon.it'
     },
-    address: `http://localhost:${port}`
+    address: `http://localhost:${port}`,
+    availableLangs
 }
 
 // PRODUCTION CONFIG
@@ -83,7 +85,8 @@ const production = {
         },
         from: 'noreply@crispybacon.it'
     },
-    address: `http://localhost:${port}`
+    address: `http://localhost:${port}`,
+    availableLangs
 };
 
 // STAGING CONFIG
@@ -106,7 +109,8 @@ const staging = {
         },
         from: 'noreply@crispybacon.it'
     },
-    address: `http://localhost:${port}`
+    address: `http://localhost:${port}`,
+    availableLangs
 }
 
 

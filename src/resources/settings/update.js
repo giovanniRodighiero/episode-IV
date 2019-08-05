@@ -6,11 +6,12 @@ const updateController = async function (request, reply) {
     const Settings = this.mongo.db.collection(SETTINGS.collectionName);
     
     const { value: oldSettings } = await Settings.findOneAndUpdate({}, { $set: request.body });
-    
-    try {
-        await replaceOldImages(request.body.meta.image, oldSettings.meta.image);
-    } catch (error) {
-        this.log.error('Error while replacing old images ', error);
+    for (const lang of this.config.availableLangs) {
+        try {
+            await replaceOldImages(request.body[lang].meta.image, oldSettings[lang].meta.image);
+        } catch (error) {
+            this.log.error('Error while replacing old images ', error);
+        }
     }
 
     reply.code(200);
@@ -23,10 +24,10 @@ const updateSchema = {
     description: 'Updates the general site\'s settings.',
     tags: ['Settings'],
 
-    body: SETTINGS.schemas.baseSettingsSchema,
+    body: SETTINGS.schemas.baseSettingsSchemaWithLangs,
 
     response: {
-        200: SETTINGS.schemas.baseSettingsSchema,
+        200: SETTINGS.schemas.baseSettingsSchemaWithLangs,
 
         400: generateErrorSchema([errorTypes.VALIDATION_ERROR, errorTypes.MISSING_PARAM], 'Validation error')
     }

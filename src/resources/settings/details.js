@@ -15,7 +15,7 @@ const detailsSchema = {
     tags: ['Settings'],
 
     response: {
-        200: SETTINGS.schemas.baseSettingsSchema
+        200: SETTINGS.schemas.baseSettingsSchemaWithLangs
     }
 };
 

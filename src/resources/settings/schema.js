@@ -1,6 +1,10 @@
+const config = require('../../../config');
+
+const { availableLangs } = config[process.env.NODE_ENV || 'development'];
+
 const baseSettingsSchema = {
     type: 'object',
-    required: ['meta', 'lang'],
+    required: ['meta'],
     properties: {
         meta: {
             type: 'object',
@@ -18,12 +22,23 @@ const baseSettingsSchema = {
                 twitterTitle: { type: 'string', description: 'Twitter title' },
                 twitterDescription: { type: 'string', description: 'Twitter description' },
             }
-        },
-        lang: { type: 'string', default: 'it' },
+        }
     },
     additionalProperties: false
 };
 
+const baseSettingsSchemaWithLangs = {
+    type: 'object',
+    required: [],
+    properties: {}
+};
+
+availableLangs.forEach(lang => {
+    baseSettingsSchemaWithLangs.required.push(lang);
+    baseSettingsSchemaWithLangs.properties[lang] = baseSettingsSchema; 
+});
+
 module.exports = {
-    baseSettingsSchema
+    baseSettingsSchema,
+    baseSettingsSchemaWithLangs
 };
