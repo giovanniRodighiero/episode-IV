@@ -5,3 +5,6 @@
 * added better doc generation with a utils inside the error schema file;
 * refactored all tests with a slightly better sintax;
 * added pino logger config.
+
+# v1.1
+* add multilang support for homepage and settings meta
