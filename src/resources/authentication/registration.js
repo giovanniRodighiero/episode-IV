@@ -1,11 +1,8 @@
 const { encrypt } = require('node-password-encrypter');
-const { promisify } = require('util');
 
 const { userRegistrationTemplate } = require('../../views/email');
 const { errorTypes, generateErrorSchema } = require('../errors/schema');
 const { USERS } = require('../users/collection');
-
-let signJwt;
 
 const registrationController = async function (request, reply) {
     const Users = this.mongo.db.collection(USERS.collectionName);
@@ -30,11 +27,8 @@ const registrationController = async function (request, reply) {
         privacyAccepted: true
     });
 
-    if (!signJwt)
-        signJwt = promisify(this.jwt.sign);
-
     // CREATE A NEW TOKEN TO ALLOW LOGIN SKIP
-    const token = await this.jwt.sign({ account: email }, { expiresIn: '2 days' });
+    const token = await reply.jwtSign({ account: email }, { expiresIn: '2 days' });
     
     // SEND CONFIRMATION ACCOUNT EMAIL
     await this.nodemailer.sendMail({

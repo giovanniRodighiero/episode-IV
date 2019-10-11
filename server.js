@@ -9,6 +9,7 @@ const Ajv = require('ajv');
 const allConfigs = require('./config');
 const swaggerConfig = require('./src/services/swagger');
 const pinoConfig = require('./src/services/pino');
+const { errorTypes } = require('./src/resources/errors/schema');
 
 
 const ALLOWED_ENVIRONMENT = Object.keys(allConfigs);
@@ -50,7 +51,18 @@ function buildFastify () {
     fastify.register(cors);
 
     // JWT UTILITIES (fastify.jwt / this.jwt)
-    fastify.register(jwt, { secret: fastify.config.jwtSecret });
+    fastify.register(fastifyPlugin(async function (fastify) {
+        fastify.register(jwt, {
+            secret: fastify.config.jwtSecret,
+            // messages: {
+            //     noAuthorizationInHeaderMessage: errorTypes.NOT_AUTHENTICATED,
+            //     badRequestErrorMessage: errorTypes.NOT_AUTHENTICATED,
+            //     authorizationTokenInvalid: _ => errorTypes.NOT_AUTHENTICATED,
+            //     authorizationTokenExpiredMessage: errorTypes.NOT_AUTHENTICATED
+            // }
+        });
+        fastify.decorate('secureAuth', require('./src/middlewares/authentication'));
+    }));
 
     // NODEMAILER CONFIG (fastify.nodemailer / this.nodemailer)
     fastify.register(fastifyNodeMailer, fastify.config.mailer.nodemailerConf);

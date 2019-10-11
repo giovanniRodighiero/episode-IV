@@ -160,12 +160,14 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
 
         test('it should succeed for correct params', async () => {
             expect.assertions(3);
-            const body = { payload: {
-                email: 'giovanni.rodighiero@crispybacon.it',
-                password: 'password',
-                confirmPassword: 'password',
-                privacyAccepted: true
-            }};
+            const body = {
+                payload: {
+                    email: 'giovanni.rodighiero@crispybacon.it',
+                    password: 'password',
+                    confirmPassword: 'password',
+                    privacyAccepted: true
+                }
+            };
 
             try {
                 const requestsDetails = buildRequest(body);

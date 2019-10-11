@@ -15,28 +15,15 @@ function notAuthorized (reply) {
 }
 
 const authenticationMiddleware = async function (request, reply) {
-    const authHeader = request.headers['authorization'];
 
-    // HEADER NOT PROVIDED
-    if (!authHeader)
-        return notAuthorized(reply);
-
-    const [ protocol, token ] = authHeader.split(' ');
-
-    // TOKEN NOT PROVIDED
-    if (!token)
-        return notAuthorized(reply);
-    
-    let decoded;
     try {
-        // using sync implementation https://github.com/auth0/node-jsonwebtoken/issues/111
-        decoded = this.jwt.verify(token);
+        await request.jwtVerify();
     } catch (error) {
-        return notAuthorized(reply);
+        return notAuthorized(reply); 
     }
 
     const Users = this.mongo.db.collection(USERS.collectionName);
-    const { email, iat } = decoded;
+    const { email, iat } = request.user;
 
     try {
         const user = await Users.findOne({ email }, profileProjection);

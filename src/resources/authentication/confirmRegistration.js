@@ -9,7 +9,6 @@ const confirmRegistrationController = async function (request, reply) {
 
     let decoded;
     try {
-        // using sync implementation https://github.com/auth0/node-jsonwebtoken/issues/111
         decoded = this.jwt.verify(request.body.token);
     } catch (error) {
         // TOKEN MALFORMED OR EXPIRED
