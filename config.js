@@ -1,3 +1,22 @@
+// NODE ENV CONSTANTS
+const TEST = 'test';
+const TEST_DEBUG = 'test-debug';
+const DEVELOPMENT = 'development';
+const STAGING = 'staging';
+const PRODUCTION = 'production';
+
+const ENV = {
+    DEFAULT: DEVELOPMENT,
+    AVAILABLE: [TEST, TEST_DEBUG, DEVELOPMENT, STAGING, PRODUCTION],
+    TEST,
+    TEST_DEBUG,
+    DEVELOPMENT,
+    STAGING,
+    PRODUCTION
+};
+
+
+//CONFIGURATIONS
 const projectName = 'project-name';
 const databaseUrl = `mongodb://localhost:27017/${projectName}`;
 
@@ -6,6 +25,8 @@ function buildConfig (env = process.env.NODE_ENV) {
 
     let settings = {
         port: 4000,
+
+        availableLangs: ['it', 'en'],
 
         database: {},
 
@@ -34,23 +55,23 @@ function buildConfig (env = process.env.NODE_ENV) {
     settings.address= `http://localhost:${settings.port}`;
 
     switch (env) {
-        case 'test-debug':
-        case 'test':
+        case ENV.TEST_DEBUG:
+        case ENV.TEST:
             settings.database.url = `${databaseUrl}-test`;
             settings.database.name = `${projectName}-test`;
             break;
 
-        case 'staging':
+        case ENV.STAGING:
             settings.database.url = `${databaseUrl}-staging`;
             settings.database.name = `${projectName}-staging`;
             break;
 
-        case 'production':
+        case ENV.PRODUCTION:
             settings.database.url = `${databaseUrl}-production`;
             settings.database.name = `${projectName}-production`;
             break;
 
-        case 'development':
+        case ENV.DEVELOPMENT:
         default:
             settings.database.url = `${databaseUrl}-development`;
             settings.database.name = `${projectName}-development`;
@@ -60,5 +81,7 @@ function buildConfig (env = process.env.NODE_ENV) {
     return settings;
 }
 
-
-module.exports = buildConfig();
+module.exports = {
+    ENV,
+    config: buildConfig,
+};

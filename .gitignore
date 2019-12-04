@@ -1,6 +1,9 @@
+
 node_modules
 public
 
+#test
 coverage
 
+#ide
 .idea

@@ -4,7 +4,6 @@ const { USERS } = require('../resources/users/collection');
 const profileProjection = {
     email: 1,
     role: 1,
-    accountConfirmed: 1,
     tokenMinValidity: 1
 };
 
@@ -28,15 +27,20 @@ const authenticationMiddleware = async function (request, reply) {
         const user = await Users.findOne({ email }, profileProjection);
 
         // CHECK FOR USER EXISTENCE
-        if (!user)
+        if (!user) {
+            request.log.debug(`Missing user`);
             return notAuthorized(reply);
+        }
 
         // CHECK FOR BLACKLISTED TOKEN
-        if (!!user.tokenMinValidity && (iat * 1000) < user.tokenMinValidity)
+        if (!!user.tokenMinValidity && (iat * 1000) < user.tokenMinValidity) {
+            request.log.debug(`Token validity expended for user ${user._id}`);
             return notAuthorized(reply);
-        
+        }
+
         // ALL FINE, FORWARD USER PROFILE
         request.user = user;
+        request.log.debug(`Valid authentication for user ${user._id}`);
 
     } catch (error) {
         request.log.error(error);

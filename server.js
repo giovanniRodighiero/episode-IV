@@ -1,6 +1,9 @@
+
+const {ENV} = require('./config');
+
 // SET UP CORRECT ENV VARIABLE WITH DEFAULT
-if (!process.env.NODE_ENV || !['test', 'test-debug', 'development', 'staging', 'production'].includes(process.env.NODE_ENV))
-    process.env.NODE_ENV = 'development';
+if (!process.env.NODE_ENV || !ENV.AVAILABLE.includes(process.env.NODE_ENV))
+    process.env.NODE_ENV = ENV.DEFAULT;
 
 const fastifyMongoDb = require('fastify-mongodb');
 const fastifyPlugin = require('fastify-plugin');
@@ -10,16 +13,17 @@ const fastifySwagger = require('fastify-swagger');
 const cors = require('fastify-cors');
 const Ajv = require('ajv');
 
-const config = require('./config');
+const config = require('./config').config();
 const swaggerConfig = require('./src/services/swagger');
-const pinoConfig = require('./src/services/pino');
+const pinoConfig = require('./src/services/pino')();
+const extraLogs = require('./src/middlewares/extraLogs');
 
 // SET UP LOGGER
 const fastify = require('fastify')({
     logger: pinoConfig
 });
 
-fastify.log.info('NODE_ENV set to ', process.env.NODE_ENV);
+fastify.log.info(`NODE_ENV set to ${process.env.NODE_ENV}`);
 
 // SETUP AJV KEYWORDS
 const ajv = new Ajv({
@@ -32,7 +36,7 @@ require('ajv-keywords')(ajv, 'transform');
 
 
 // SERVER BOOT FUNCTION
-function buildFastify () {
+ function buildFastify () {
     // CATCH UNHANDLEDREJECTION
     process.on('unhandledRejection', function (error) {
         fastify.log.error(error);
@@ -74,13 +78,16 @@ function buildFastify () {
         url: fastify.config.database.url
     });
 
+     // LOG BODY, PINO CANNOT DO IT
+     if (process.env.NODE_ENV !== ENV.PRODUCTION)
+         extraLogs.init(fastify);
+
     // REGISTER ROUTES/CUSTOM PLUGINS
     fastify.register(fastifyPlugin(require('./src/resources/errors'), { name: 'errors' }));
     fastify.register(require('./src/resources/users'), { name: 'users' });
     fastify.register(require('./src/resources/authentication'), { name: 'authentication' });
-    fastify.register(require('./src/resources/settings'), { name: 'settings' });
 
     return fastify;
-};
+}
 
 module.exports = buildFastify;
