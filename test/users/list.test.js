@@ -47,7 +47,10 @@ describe(`USER LIST testing ${requestsDetails.method} ${requestsDetails.url};`, 
 
     describe('', () => {
 
-        beforeAll(async () => seedUsers(fastify.mongo.db));
+        beforeAll(async () => {
+            await seedUsers(fastify.mongo.db);
+            fastify.log.debug('seeding users done, no errors');
+        });
 
         beforeEach(done => {
             fastify.jwt.sign({ email: 'info@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {

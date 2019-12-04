@@ -85,7 +85,7 @@ async function seedUsers (database) {
             const { salt, encryptedContent: password } = await encrypt({ content: user.password, keylen: 128, iterations: 1000 });
             await Users.insertOne({ ...user, salt, password });
         }
-        console.log('seeding users done, no errors');
+
         return true;
     } catch (error) {
         throw error;

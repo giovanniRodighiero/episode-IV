@@ -81,7 +81,10 @@ describe(`RESEND CONFIRMATION REGISTRATION testing ${requestsDetails.method} ${r
 
     describe('', () => {
 
-        beforeAll(async () => await seedUsers(fastify.mongo.db));
+        beforeAll(async () => {
+            await seedUsers(fastify.mongo.db);
+            fastify.log.debug('seeding users done, no errors');
+        });
 
         test('it should fail for not existing user email', async () => {
             expect.assertions(2);

@@ -1,14 +1,13 @@
 const server = require('./server')();
 
-
 const runServer = (error, address) => {
     if (error) {
         server.log.error(error);
-        server.close();
+        return server.close();
     } else {
         server.log.info('running on port ' + address);
     }
-}
+};
 
     
 if (process.env.NODE_ENV === 'development')

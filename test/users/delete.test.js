@@ -49,6 +49,8 @@ describe(`USER DELETE testing ${requestsDetails.method} ${requestsDetails.url}:i
 
         beforeEach(done => {
             seedUsers(fastify.mongo.db).then(_ => {
+                fastify.log.debug('seeding users done, no errors');
+
                 fastify.jwt.sign({ email: 'info+admin@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                     tokenSuperadmin = accessToken;
                     fastify.jwt.sign({ email: 'info+userconfirmed@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {

@@ -1,111 +1,64 @@
-/************ SHARED ************/
 const projectName = 'project-name';
 const databaseUrl = `mongodb://localhost:27017/${projectName}`;
-const port = 4000;
-const jwtSecret = '7612ca2ee54e1583a3281c5d22c5504df2862574fe28e3f86a8a736a5b4ea2cce560d5b8b0c6ab14d852a60e2fe38ab8'
-const userRoles = {
-    CRISPY: 100,
-    SUPERADMIN: 90,
-    ADMIN: 80,
-    USER: 70
-};
 
+// let override config env for testing
+function buildConfig (env = process.env.NODE_ENV) {
 
+    let settings = {
+        port: 4000,
 
-/************ CONFIGURATIONS ************/
+        database: {},
 
-// TEST CONFIG
-const test = {
-    port,
-    database: {
-        url: `${databaseUrl}-test`,
-        name: `${projectName}-test`
-    },
-    jwtSecret,
-    userRoles,
-    mailer: {
-        nodemailerConf: {
-            host: 'smtp.ethereal.email',
-            port: 587,
-            auth: {
-                user: 'i6t2mlf4ld4pwqct@ethereal.email',
-                pass: 'u8hR4an9ArfZ8aAtef'
-            }
+        jwtSecret: '7612ca2ee54e1583a3281c5d22c5504df2862574fe28e3f86a8a736a5b4ea2cce560d5b8b0c6ab14d852a60e2fe38ab8',
+
+        userRoles: {
+            CRISPY: 100,
+            SUPERADMIN: 90,
+            ADMIN: 80,
+            USER: 70
         },
-        from: 'noreply@crispybacon.it'
-    },
-    address: `http://localhost:${port}`
-}
 
-// DEVELOPMENT CONFIG
-const development = {
-    port,
-    database: {
-        url: `${databaseUrl}-development`,
-        name: `${projectName}-development`
-    },
-    jwtSecret,
-    userRoles,
-    mailer: {
-        nodemailerConf: {
-            host: 'smtp.ethereal.email',
-            port: 587,
-            auth: {
-                user: 'i6t2mlf4ld4pwqct@ethereal.email',
-                pass: 'u8hR4an9ArfZ8aAtef'
-            }
+        mailer: {
+            nodemailerConf: {
+                host: 'smtp.ethereal.email',
+                port: 587,
+                auth: {
+                    user: 'i6t2mlf4ld4pwqct@ethereal.email',
+                    pass: 'u8hR4an9ArfZ8aAtef'
+                }
+            },
+            from: 'noreply@crispybacon.it'
         },
-        from: 'noreply@crispybacon.it'
-    },
-    address: `http://localhost:${port}`
-}
+    };
 
-// PRODUCTION CONFIG
-const production = {
-    port,
-    database: {
-        url: `${databaseUrl}-production`,
-        name: `${projectName}-production`
-    },
-    jwtSecret,
-    userRoles,
-    mailer: {
-        nodemailerConf: {
-            host: 'smtp.ethereal.email',
-            port: 587,
-            auth: {
-                user: 'i6t2mlf4ld4pwqct@ethereal.email',
-                pass: 'u8hR4an9ArfZ8aAtef'
-            }
-        },
-        from: 'noreply@crispybacon.it'
-    },
-    address: `http://localhost:${port}`
-};
+    settings.address= `http://localhost:${settings.port}`;
 
-// STAGING CONFIG
-const staging = {
-    port,
-    database: {
-        url: `${databaseUrl}-production`,
-        name: `${projectName}-production`
-    },
-    jwtSecret,
-    userRoles,
-    mailer: {
-        nodemailerConf: {
-            host: 'smtp.ethereal.email',
-            port: 587,
-            auth: {
-                user: 'i6t2mlf4ld4pwqct@ethereal.email',
-                pass: 'u8hR4an9ArfZ8aAtef'
-            }
-        },
-        from: 'noreply@crispybacon.it'
-    },
-    address: `http://localhost:${port}`
+    switch (env) {
+        case 'test-debug':
+        case 'test':
+            settings.database.url = `${databaseUrl}-test`;
+            settings.database.name = `${projectName}-test`;
+            break;
+
+        case 'staging':
+            settings.database.url = `${databaseUrl}-staging`;
+            settings.database.name = `${projectName}-staging`;
+            break;
+
+        case 'production':
+            settings.database.url = `${databaseUrl}-production`;
+            settings.database.name = `${projectName}-production`;
+            break;
+
+        case 'development':
+        default:
+            settings.database.url = `${databaseUrl}-development`;
+            settings.database.name = `${projectName}-development`;
+            break;
+    }
+
+    return settings;
 }
 
 
-
-module.exports = { test, development, staging, production };
+module.exports = buildConfig();

@@ -46,6 +46,8 @@ describe(`USER DETAILS testing ${requestsDetails.method} ${requestsDetails.url}:
 
         beforeAll(done => {
             seedUsers(fastify.mongo.db).then(_ =>{
+                fastify.log.debug('seeding users done, no errors');
+
                 fastify.jwt.sign({ email: 'info@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                     token = accessToken;
                     fastify.jwt.sign({ email: 'info+localadmin@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {

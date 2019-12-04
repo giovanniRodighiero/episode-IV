@@ -108,7 +108,10 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
 
     describe('', () => {
 
-        beforeAll(async () => await seedUsers(fastify.mongo.db));
+        beforeAll(async () => {
+            await seedUsers(fastify.mongo.db);
+            fastify.log.debug('seeding users done, no errors');
+        });
 
         test('it should fail for already existing email address', async () => {
             expect.assertions(3);

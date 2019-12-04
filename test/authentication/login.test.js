@@ -78,7 +78,10 @@ describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () =
 
     describe('', () => {
 
-        beforeAll(async () => seedUsers(fastify.mongo.db));
+        beforeAll(async () => {
+            await seedUsers(fastify.mongo.db);
+            fastify.log.debug('seeding users done, no errors');
+        });
 
         test('it should fail for not found email', async () => {
             expect.assertions(3);

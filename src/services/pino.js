@@ -1,5 +1,4 @@
-// timestamp (Boolean | Function) default true
-// useLevelLabels default false
+const config = require('../../config');
 
 // https://github.com/ovhemert/pino-stackdriver#readme pino plugin for google stackdriver
 
@@ -14,72 +13,75 @@ Use error for expected but infrequent error conditions (like network failures, d
 Use fatal for unexpected error conditions.
 */
 
-const defaultConfig = {
-    level: 'debug',
-    prettyPrint: { // require additional package
-        colorize: true,
-        // crlf: false, // default
-        // levelFirst: true, // default false
-        // messageKey: 'msg', // default
-        translateTime: "yyyy:mm:dd HH:MM:ss", // https://www.npmjs.com/package/dateformat // TODO check timezone (set to +1, need a localtimestamp)
-        ignore: 'pid,hostname',
-    },
+// require additional package pino-pretty
+const prettyConfig = {
+    colorize: true,
+    translateTime: "yyyy:mm:dd HH:MM:ss", // https://www.npmjs.com/package/dateformat
+    ignore: 'pid,hostname', // 'pid,hostname,reqId'
+};
 
-    serializers: { // SLOW DOWN PINO, ONLY ON DEV-TEST
-        res(res) {
-            return {
-                statusCode: res.statusCode,
-                // body: res.raw, // there is no body-payload on res, need hook onSend
-            }
-        },
-        req(req) {
-            if (req.url.includes('/documentations/'))
+function buildOptions () {
+    let options = {
+        serializers: {
+            res(res) {
                 return {
-                    url: req.url
-                };
+                    statusCode: res.statusCode
+                }
+            },
+            req(req) {
+                if (req.url.includes('/documentations/'))
+                    return {
+                        url: req.url
+                    };
 
-            return {
-                method: req.method,
-                url: req.url,
-                path: req.path,
-                parameters: req.parameters,
-                // Including the body and headers in the log could be in violation
-                // of privacy laws, e.g. GDPR. You should use the "redact" option to
-                // remove sensitive fields. It could also leak authentication data in
-                // the logs.
-                body: req.body,
-                headers: req.headers,
-            };
-        },
-        err(err) {
-            return {
-                type: err.type,
-                message: err.message,
-                stack: err.stack,
+                return {
+                    method: req.method,
+                    url: req.url,
+                    path: req.path,
+                    parameters: req.parameters,
+                    // TODO: use pino.redact
+                    // Including the body and headers in the log could be in violation
+                    // of privacy laws, e.g. GDPR. You should use the "redact" option to
+                    // remove sensitive fields. It could also leak authentication data in
+                    // the logs.
+                    body: req.body,
+                    headers: req.headers,
+                };
+            },
+            err(error) {
+                return {
+                    type: error.type,
+                    message: error.message,
+                    stack: error.stack,
+                    raw: error
+                }
             }
         }
+    };
+
+    switch (process.env.NODE_ENV) {
+        case 'test-debug':
+            options.level = 'debug';
+            options.prettyPrint = prettyConfig;
+            break;
+
+        case 'test':
+            options.level = 'warn';
+            break;
+
+        case 'development':
+            options.level = 'debug';
+            options.prettyPrint = prettyConfig;
+            break;
+
+        case 'staging':
+            break;
+
+        case 'production':
+            break;
     }
-};
 
-const development = { ...defaultConfig };
+    return options;
+}
 
-const test = {
-    ...defaultConfig,
-    level: 'warn',
-    prettyPrint: {
-        ...defaultConfig.prettyPrint,
-        ignore: 'pid,hostname,reqId',
-    }
-};
-
-const staging = { ...defaultConfig, level: 'info'};
-
-
-const production = { ...defaultConfig, level: 'info' };
-
-module.exports = {
-    development,
-    test,
-    staging,
-    production
-};
+module.exports = buildOptions();

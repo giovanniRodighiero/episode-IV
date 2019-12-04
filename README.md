@@ -1,13 +1,12 @@
 # Fastify project backbone for an API service
 
 ## TODO
-* Set up the default logger `Pino` and replace most of the `console.log`;
 * Check on all config required options before boot;
 * Swagger integration and config for existing API;
 
 ## Requirements
-* Raccomended Node.js `>= 9.11.x`, but should work with `>= 8.6.x`;
-* MongoDB `>= 3.6`;
+* Node.js lts 12 `>= 12.13.1` ;
+* MongoDB `>= 3.6`; 4?
 
 ## Useful links
 * [Fastify docs](https://www.fastify.io/)

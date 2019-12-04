@@ -11,7 +11,6 @@ const profileProjection = {
 function notAuthorized (reply) {
     reply.code(401);
     reply.send({ code: errorTypes.NOT_AUTHENTICATED, field: 'token' });
-    return;
 }
 
 const authenticationMiddleware = async function (request, reply) {
@@ -39,13 +38,11 @@ const authenticationMiddleware = async function (request, reply) {
         // ALL FINE, FORWARD USER PROFILE
         request.user = user;
 
-        return;
     } catch (error) {
         request.log.error(error);
         reply.code(500);
         reply.send({ code: errorTypes.INTERNAL_SERVER_ERROR });
-        return;
     }
-}
+};
 
 module.exports = authenticationMiddleware;

@@ -34,6 +34,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
 
             await fastify.ready();
             await seedUsers(fastify.mongo.db);
+            fastify.log.debug('seeding users done, no errors');
 
         } catch (error) {
             console.log(error);

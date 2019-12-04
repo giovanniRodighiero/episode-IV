@@ -1,5 +1,11 @@
 # Changelog
 
+## Miki
+* node 12.13.1
+* npm update
+* added test coverage
+
+
 ## v1.0
 * refactored using all fastify register apis;
 * added better doc generation with a utils inside the error schema file;

@@ -94,7 +94,10 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
 
     describe('', () => {
 
-        beforeAll(async () => seedUsers(fastify.mongo.db));
+        beforeAll(async () => {
+            await seedUsers(fastify.mongo.db);
+            fastify.log.debug('seeding users done, no errors');
+        });
 
         test('it should fail for not existing user email', done => {
             expect.assertions(2);

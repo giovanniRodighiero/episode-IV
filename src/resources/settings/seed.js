@@ -14,13 +14,11 @@ async function seedSettings (database, config) {
 
         await Settings.insertOne(settings(config.projectName));
 
-        console.log('seeding settings done, no errors');
         return true;
     } catch (error) {
         throw error;
     }
-};
-
+}
 
 module.exports = {
     settings,
