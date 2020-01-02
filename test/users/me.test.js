@@ -53,7 +53,7 @@ describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should fail for non existing account', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ email: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
+            fastify.jwt.sign({ email: 'info+wrong@email.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const requestsDetails = buildRequest(token);
 
                 try {
@@ -76,7 +76,7 @@ describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};
     it('should succeed for correct token', done => {
         expect.assertions(5);
     
-        fastify.jwt.sign({ email: 'info@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
+        fastify.jwt.sign({ email: 'info@email.it' }, { expiresIn: '1 day' }, async (err, token) => {            
             const requestsDetails = buildRequest(token);
 
             try {
@@ -84,7 +84,7 @@ describe(`USER PROFILE testing ${requestsDetails.method} ${requestsDetails.url};
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(200);
-                expect(payload.email).toBe('info@crispybacon.it');
+                expect(payload.email).toBe('info@email.it');
                 expect(payload.role).toBe(100);
                 expect(payload.password).toBeUndefined();
                 expect(payload.salt).toBeUndefined();

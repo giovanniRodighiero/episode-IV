@@ -6,7 +6,7 @@
 * refactored all tests with a slightly better sintax;
 * added pino logger config.
 
-## Miki
+## v1.1
 * node 12.13.1
 * npm update
 * added test coverage

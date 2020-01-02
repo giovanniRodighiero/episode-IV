@@ -89,7 +89,7 @@ describe(`RESEND CONFIRMATION REGISTRATION testing ${requestsDetails.method} ${r
         test('it should fail for not existing user email', async () => {
             expect.assertions(2);
     
-            const body = { payload: { email: 'info+wrong@crispybacon.it' } };
+            const body = { payload: { email: 'info+wrong@email.it' } };
             try {
                 const requestsDetails = buildRequest(body);
                 const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
@@ -107,7 +107,7 @@ describe(`RESEND CONFIRMATION REGISTRATION testing ${requestsDetails.method} ${r
         test('it should fail for already active account', async () => {
             expect.assertions(2);
     
-            const body = { payload: { email: 'info@crispybacon.it' } };
+            const body = { payload: { email: 'info@email.it' } };
             try {
                 const requestsDetails = buildRequest(body);
                 const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
@@ -124,7 +124,7 @@ describe(`RESEND CONFIRMATION REGISTRATION testing ${requestsDetails.method} ${r
         test('it should succeed for active account', async () => {
             expect.assertions(2);
     
-            const body = { payload: { email: 'info+user@crispybacon.it' } };
+            const body = { payload: { email: 'info+user@email.it' } };
             try {
                 const requestsDetails = buildRequest(body);
 

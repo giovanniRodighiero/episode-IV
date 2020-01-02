@@ -48,11 +48,11 @@ describe(`USER DETAILS testing ${requestsDetails.method} ${requestsDetails.url}:
             seedUsers(fastify.mongo.db).then(_ =>{
                 fastify.log.debug('seeding users done, no errors');
 
-                fastify.jwt.sign({ email: 'info@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+                fastify.jwt.sign({ email: 'info@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                     token = accessToken;
-                    fastify.jwt.sign({ email: 'info+localadmin@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+                    fastify.jwt.sign({ email: 'info+localadmin@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                         tokenAdmin = accessToken;
-                        fastify.jwt.sign({ email: 'info+userconfirmed@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessTokenConfirmed) => {
+                        fastify.jwt.sign({ email: 'info+userconfirmed@email.it' }, { expiresIn: '2 day' }, (err, accessTokenConfirmed) => {
                             tokenUserConfirmed = accessTokenConfirmed;
                             done();
                         });
@@ -119,7 +119,7 @@ describe(`USER DETAILS testing ${requestsDetails.method} ${requestsDetails.url}:
         test('it should fail for an id of a user with higher role', async () => {
             expect.assertions(2);
 
-            const { _id } = await fastify.mongo.db.collection('users').findOne({ email: 'info@crispybacon.it' });
+            const { _id } = await fastify.mongo.db.collection('users').findOne({ email: 'info@email.it' });
             const requestsDetails = buildRequest(tokenAdmin, _id.toString());
 
             try {
@@ -138,7 +138,7 @@ describe(`USER DETAILS testing ${requestsDetails.method} ${requestsDetails.url}:
         test('it should succeed for correct permissions and id', async () => {
             expect.assertions(2);
 
-            const { _id, email } = await fastify.mongo.db.collection('users').findOne({ email: 'info+userconfirmed@crispybacon.it'  }, { email: 1 });
+            const { _id, email } = await fastify.mongo.db.collection('users').findOne({ email: 'info+userconfirmed@email.it'  }, { email: 1 });
             const requestsDetails = buildRequest(tokenAdmin, _id.toString());
 
             try {

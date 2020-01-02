@@ -53,11 +53,11 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`
             seedUsers(fastify.mongo.db).then( _ => {
                 fastify.log.debug('seeding users done, no errors');
 
-                fastify.jwt.sign({ email: 'info+admin@crispybacon.it' }, opts, (err, accessToken) => {
+                fastify.jwt.sign({ email: 'info+admin@email.it' }, opts, (err, accessToken) => {
                     tokenSuperadmin = accessToken;
-                    fastify.jwt.sign({ email: 'info+localadmin@crispybacon.it' }, opts, (err, accessToken) => {
+                    fastify.jwt.sign({ email: 'info+localadmin@email.it' }, opts, (err, accessToken) => {
                         tokenAdmin = accessToken;
-                        fastify.jwt.sign({ email: 'info+userconfirmed@crispybacon.it' }, opts, (err, accessTokenConfirmed) => {
+                        fastify.jwt.sign({ email: 'info+userconfirmed@email.it' }, opts, (err, accessTokenConfirmed) => {
                             tokenUserConfirmed = accessTokenConfirmed;
                             done();
                         });
@@ -126,7 +126,7 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`
         test('it should fail for same person id', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+admin@crispybacon.it' });
+            const { _id } = await Users.findOne({ email: 'info+admin@email.it' });
             const body = { payload: { email: 'newmail@mail.it' } };
             const requestsDetails = buildRequest(tokenSuperadmin, _id.toString(), body);
 
@@ -146,7 +146,7 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`
         test('it should fail for id of a user with higher role', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+admin@crispybacon.it' });
+            const { _id } = await Users.findOne({ email: 'info+admin@email.it' });
             const body = { payload: { email: 'newmail@mail.it' } };
             const requestsDetails = buildRequest(tokenAdmin, _id.toString(), body);
 
@@ -166,7 +166,7 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`
         test('it should fail updating a role higher than the user making the request', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+userconfirmed@crispybacon.it' });
+            const { _id } = await Users.findOne({ email: 'info+userconfirmed@email.it' });
             const body = { payload: { role: fastify.config.userRoles.SUPERADMIN } };
             const requestsDetails = buildRequest(tokenAdmin, _id.toString(), body);
 
@@ -186,8 +186,8 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`
         test('it should fail for an already in use email', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+userconfirmed@crispybacon.it' });
-            const body = { payload: { email: 'userfake3@crispybacon.it' } };
+            const { _id } = await Users.findOne({ email: 'info+userconfirmed@email.it' });
+            const body = { payload: { email: 'userfake3@email.it' } };
             const requestsDetails = buildRequest(tokenAdmin, _id.toString(), body);
 
             try {
@@ -206,8 +206,8 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`
         test('it should succeed for correct params', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+userconfirmed@crispybacon.it' });
-            const body = { payload: { email: 'usernuovissimo@crispybacon.it' } };
+            const { _id } = await Users.findOne({ email: 'info+userconfirmed@email.it' });
+            const body = { payload: { email: 'usernuovissimo@email.it' } };
             const requestsDetails = buildRequest(tokenAdmin, _id.toString(), body);
 
             try {
@@ -215,7 +215,7 @@ describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`
                 const payload = JSON.parse(_payload);
 
                 expect(statusCode).toBe(200);
-                expect(payload.email).toBe('usernuovissimo@crispybacon.it');
+                expect(payload.email).toBe('usernuovissimo@email.it');
             } catch (error) {
                 fastify.log.error(error);
                 expect(error).toBeUndefined();

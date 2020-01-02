@@ -71,7 +71,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should fail for expired token', done => {
         expect.assertions(2);
 
-        fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: 1 }, async (err, token) => {
+        fastify.jwt.sign({ account: 'info+user@email.it' }, { expiresIn: 1 }, async (err, token) => {
             await sleep(2000);
             
             const body = { payload: { token } };
@@ -102,7 +102,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should fail for not existing user email', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
+            fastify.jwt.sign({ account: 'info+wrong@email.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { payload: { token } };
                 const requestsDetails = buildRequest(body);
 
@@ -124,7 +124,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should fail for already active user account', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
+            fastify.jwt.sign({ account: 'info@email.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { payload: { token } };
                 const requestsDetails = buildRequest(body);
 
@@ -146,7 +146,7 @@ describe(`CONFIRMATION testing ${requestsDetails.method} ${requestsDetails.url};
         test('it should succeed for an existing, non active account', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
+            fastify.jwt.sign({ account: 'info+user@email.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { payload: { token } };
                 const requestsDetails = buildRequest(body);
 

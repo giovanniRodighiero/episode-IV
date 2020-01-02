@@ -48,7 +48,7 @@ function buildConfig (env = process.env.NODE_ENV) {
                     pass: 'u8hR4an9ArfZ8aAtef'
                 }
             },
-            from: 'noreply@crispybacon.it'
+            from: 'noreply@email.it'
         },
     };
 

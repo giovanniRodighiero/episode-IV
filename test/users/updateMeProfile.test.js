@@ -27,9 +27,9 @@ describe(`USER PROFILE UPDATE testing ${requestsDetails.method} ${requestsDetail
     });
 
     beforeEach(done => {
-        fastify.jwt.sign({ email: 'info@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+        fastify.jwt.sign({ email: 'info@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
             token = accessToken;
-            fastify.jwt.sign({ email: 'info+user@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+            fastify.jwt.sign({ email: 'info+user@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                 tokenUser = accessToken;
                 done();
             });
@@ -39,7 +39,7 @@ describe(`USER PROFILE UPDATE testing ${requestsDetails.method} ${requestsDetail
     test('it should fail for wrong access token', async () => {
         expect.assertions(2);
 
-        const body = { payload: { email: 'info+usernew@crispybacon.it' } };
+        const body = { payload: { email: 'info+usernew@email.it' } };
         const requestsDetails = buildRequest(fakeToken, body);
 
         try {
@@ -63,7 +63,7 @@ describe(`USER PROFILE UPDATE testing ${requestsDetails.method} ${requestsDetail
         test('it should fail for non-confirmed account', async () => {
             expect.assertions(2);
 
-            const body = { payload: { email: 'info+user@crispybacon.it' } };
+            const body = { payload: { email: 'info+user@email.it' } };
             const requestsDetails = buildRequest(tokenUser, body);
 
             try {
@@ -82,7 +82,7 @@ describe(`USER PROFILE UPDATE testing ${requestsDetails.method} ${requestsDetail
         test('it should succeed for correct token and payload', async () => {
             expect.assertions(7);
 
-            const body = { payload: { email: 'info+new@crispybacon.it' } };
+            const body = { payload: { email: 'info+new@email.it' } };
             const requestsDetails = buildRequest(token, body);
 
             try {

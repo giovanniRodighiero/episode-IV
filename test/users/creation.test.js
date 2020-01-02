@@ -54,9 +54,9 @@ describe(`USER CREATION testing ${requestsDetails.method} ${requestsDetails.url}
         });
 
         beforeEach(done => {
-            fastify.jwt.sign({ email: 'info+localadmin@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+            fastify.jwt.sign({ email: 'info+localadmin@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                 token = accessToken;
-                fastify.jwt.sign({ email: 'info+user@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+                fastify.jwt.sign({ email: 'info+user@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                     tokenUser = accessToken;
                     done();
                 });
@@ -103,7 +103,7 @@ describe(`USER CREATION testing ${requestsDetails.method} ${requestsDetails.url}
         test('it should fail for already existing email address provided', async () => {
             expect.assertions(2);
             
-            const requestsDetails = buildRequest(token, { payload: { email: 'info@crispybacon.it', role: 70 } });
+            const requestsDetails = buildRequest(token, { payload: { email: 'info@email.it', role: 70 } });
             
             try {
                 const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
@@ -120,7 +120,7 @@ describe(`USER CREATION testing ${requestsDetails.method} ${requestsDetails.url}
         test('it should fail for too high role provided (local-admin)', async () => {
             expect.assertions(2);
             
-            const requestsDetails = buildRequest(token, { payload: { email: 'info+ok@crispybacon.it', role: 80 } });
+            const requestsDetails = buildRequest(token, { payload: { email: 'info+ok@email.it', role: 80 } });
             
             try {
                 const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
@@ -137,7 +137,7 @@ describe(`USER CREATION testing ${requestsDetails.method} ${requestsDetails.url}
         test('it should fail for too high role provided (admin)', async () => {
             expect.assertions(2);
             
-            const requestsDetails = buildRequest(token, { payload: { role: 90, email: 'info+ok@crispybacon.it' } });
+            const requestsDetails = buildRequest(token, { payload: { role: 90, email: 'info+ok@email.it' } });
             
             try {
                 const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);
@@ -154,7 +154,7 @@ describe(`USER CREATION testing ${requestsDetails.method} ${requestsDetails.url}
         test('it should succeed for correct permissions and parameters', async () => {
             expect.assertions(2);
 
-            const requestsDetails = buildRequest(token, { payload: { email: 'info+new@crispybacon.it', role: 70 } });
+            const requestsDetails = buildRequest(token, { payload: { email: 'info+new@email.it', role: 70 } });
             
             try {
                 const { statusCode, payload: _payload } = await fastify.inject(requestsDetails);

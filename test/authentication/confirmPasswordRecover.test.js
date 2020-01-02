@@ -77,7 +77,7 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
     test('it should fail for expired token', done => {
         expect.assertions(2);
 
-        fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: 1 }, async (err, token) => {
+        fastify.jwt.sign({ account: 'info+user@email.it' }, { expiresIn: 1 }, async (err, token) => {
             await sleep(2000);
             const body = { payload: { token, password: 'pass', confirmPassword: 'pass' } };
             const requestsDetails = buildRequest(body);
@@ -107,7 +107,7 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
         test('it should fail for not existing user email', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info+wrong@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
+            fastify.jwt.sign({ account: 'info+wrong@email.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { payload: { token, password: 'pass', confirmPassword: 'pass' } };
                 const requestsDetails = buildRequest(body);
 
@@ -129,7 +129,7 @@ describe(`CONFIRM PASSWORD RECOVERY testing ${requestsDetails.method} ${requests
         test('it should succeed for existing user email', done => {
             expect.assertions(2);
     
-            fastify.jwt.sign({ account: 'info+user@crispybacon.it' }, { expiresIn: '1 day' }, async (err, token) => {            
+            fastify.jwt.sign({ account: 'info+user@email.it' }, { expiresIn: '1 day' }, async (err, token) => {            
                 const body = { payload: { token, password: 'newPassword', confirmPassword: 'newPassword' } };
                 const requestsDetails = buildRequest(body);
 

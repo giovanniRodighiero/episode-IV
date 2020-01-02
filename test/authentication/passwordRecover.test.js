@@ -60,7 +60,7 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
         test('it should fail for not found email', async () => {
             expect.assertions(3);
 
-            const body = { payload: { email: 'info+++@crispybacon.it' } };
+            const body = { payload: { email: 'info+++@email.it' } };
 
             try {
                 const requestsDetails = buildRequest(body);
@@ -80,7 +80,7 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
         test('it should fail for not active account', async () => {
             expect.assertions(3);
 
-            const body = { payload: { email: 'info+user@crispybacon.it' } };
+            const body = { payload: { email: 'info+user@email.it' } };
 
             try {
                 const requestsDetails = buildRequest(body);
@@ -100,7 +100,7 @@ describe(`PASSWORD RECOVER testing ${requestsDetails.method} ${requestsDetails.u
         test('it should succeed for an existing confirmed account', async () => {
             expect.assertions(3);
 
-            const body = { payload: { email: 'info@crispybacon.it' } };
+            const body = { payload: { email: 'info@email.it' } };
 
             try {
                 const requestsDetails = buildRequest(body);

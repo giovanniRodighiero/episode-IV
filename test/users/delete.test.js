@@ -51,11 +51,11 @@ describe(`USER DELETE testing ${requestsDetails.method} ${requestsDetails.url}:i
             seedUsers(fastify.mongo.db).then(_ => {
                 fastify.log.debug('seeding users done, no errors');
 
-                fastify.jwt.sign({ email: 'info+admin@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+                fastify.jwt.sign({ email: 'info+admin@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                     tokenSuperadmin = accessToken;
-                    fastify.jwt.sign({ email: 'info+userconfirmed@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+                    fastify.jwt.sign({ email: 'info+userconfirmed@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                         tokenUser = accessToken;
-                        fastify.jwt.sign({ email: 'info+localadmin@crispybacon.it'}, { expiresIn: '2 day' }, (err, accessToken) => {
+                        fastify.jwt.sign({ email: 'info+localadmin@email.it'}, { expiresIn: '2 day' }, (err, accessToken) => {
                             tokenAdmin = accessToken;
                             done();
                         });
@@ -121,7 +121,7 @@ describe(`USER DELETE testing ${requestsDetails.method} ${requestsDetails.url}:i
         test('it should fail for same person id', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+admin@crispybacon.it' }
+            const { _id } = await Users.findOne({ email: 'info+admin@email.it' }
             );
             const requestsDetails = buildRequest(tokenSuperadmin, _id.toString());
 
@@ -141,7 +141,7 @@ describe(`USER DELETE testing ${requestsDetails.method} ${requestsDetails.url}:i
         test('it should fail for id of a user with higher role', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+admin@crispybacon.it' });
+            const { _id } = await Users.findOne({ email: 'info+admin@email.it' });
             const requestsDetails = buildRequest(tokenAdmin, _id.toString());
 
             try {
@@ -160,7 +160,7 @@ describe(`USER DELETE testing ${requestsDetails.method} ${requestsDetails.url}:i
         test('it should succeed for correct permissions and id', async () => {
             expect.assertions(2);
 
-            const { _id } = await Users.findOne({ email: 'info+localadmin@crispybacon.it' }, { _id: 1 });
+            const { _id } = await Users.findOne({ email: 'info+localadmin@email.it' }, { _id: 1 });
             const requestsDetails = buildRequest(tokenSuperadmin, _id.toString());
 
             try {

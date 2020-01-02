@@ -87,7 +87,7 @@ describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () =
             expect.assertions(3);
 
             const body = { payload: {
-                email: 'info+++@crispybacon.it',
+                email: 'info+++@email.it',
                 password: 'password'
             } };
 
@@ -109,7 +109,7 @@ describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () =
             expect.assertions(3);
 
             const body = { payload: {
-                email: 'info@crispybacon.it',
+                email: 'info@email.it',
                 password: 'pass'
             } };
 
@@ -131,7 +131,7 @@ describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () =
             expect.assertions(3);
 
             const body = { payload: {
-                email: 'info+user@crispybacon.it',
+                email: 'info+user@email.it',
                 password: 'password'
             } };
 
@@ -153,7 +153,7 @@ describe(`LOGIN testing ${requestsDetails.method} ${requestsDetails.url};`, () =
             expect.assertions(11);
 
             const body = { payload: {
-                email: 'info@crispybacon.it',
+                email: 'info@email.it',
                 password: 'password'
             } };
 

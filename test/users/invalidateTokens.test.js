@@ -55,11 +55,11 @@ describe(`USER TOKEN BLACKLIST testing ${requestsDetails.method} ${requestsDetai
             seedUsers(fastify.mongo.db).then( _ => {
                 fastify.log.debug('seeding users done, no errors');
 
-                fastify.jwt.sign({ email: 'info+admin@crispybacon.it' }, opts, (err, accessToken) => {
+                fastify.jwt.sign({ email: 'info+admin@email.it' }, opts, (err, accessToken) => {
                     tokenSuperadmin = accessToken;
-                    fastify.jwt.sign({ email: 'info+localadmin@crispybacon.it' }, opts, (err, accessToken) => {
+                    fastify.jwt.sign({ email: 'info+localadmin@email.it' }, opts, (err, accessToken) => {
                         tokenAdmin = accessToken;
-                        fastify.jwt.sign({ email: 'info+userconfirmed@crispybacon.it' }, opts, (err, accessTokenConfirmed) => {
+                        fastify.jwt.sign({ email: 'info+userconfirmed@email.it' }, opts, (err, accessTokenConfirmed) => {
                             tokenUserConfirmed = accessTokenConfirmed;
                             done();
                         });
@@ -143,7 +143,7 @@ describe(`USER TOKEN BLACKLIST testing ${requestsDetails.method} ${requestsDetai
         test('it should succed for correct params', async () => {
             expect.assertions(7);
 
-            const emails = ['userfake1@crispybacon.it', 'userfake2@crispybacon.it', 'userfake3@crispybacon.it'];
+            const emails = ['userfake1@email.it', 'userfake2@email.it', 'userfake3@email.it'];
             const results = await Users.find({ email: { $in: emails } }).toArray();
             const users = results.map( user => user._id.toString());
 
@@ -168,7 +168,7 @@ describe(`USER TOKEN BLACKLIST testing ${requestsDetails.method} ${requestsDetai
         test('it should succed for correct params, ignoring the personal token when provided', async () => {
             expect.assertions(6);
 
-            const emails = ['info+admin@crispybacon.it', 'userfake2@crispybacon.it', 'userfake3@crispybacon.it'];
+            const emails = ['info+admin@email.it', 'userfake2@email.it', 'userfake3@email.it'];
             const results = await Users.find({ email: { $in: emails } }).toArray();
             const users = results.map( user => user._id.toString());
 
@@ -180,7 +180,7 @@ describe(`USER TOKEN BLACKLIST testing ${requestsDetails.method} ${requestsDetai
                 expect(statusCode).toBe(200);
                 const users = await Users.find({ email: { $in: emails } }).toArray();
                 for (const user of users) {
-                    if (user.email === 'info+admin@crispybacon.it') {
+                    if (user.email === 'info+admin@email.it') {
                         expect(user.tokenMinValidity).toBeUndefined();
                     } else {
                         expect(user.tokenMinValidity).not.toBeUndefined();

@@ -117,7 +117,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect.assertions(3);
             
             const body = { payload: {
-                email: 'info@crispybacon.it',
+                email: 'info@email.it',
                 password: 'password',
                 confirmPassword: 'password',
                 privacyAccepted: true
@@ -141,7 +141,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect.assertions(3);
             
             const body = { payload: {
-                email: 'info@crispybacon.it',
+                email: 'info@email.it',
                 password: 'password',
                 confirmPassword: 'password',
                 privacyAccepted: false
@@ -165,7 +165,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             expect.assertions(3);
             const body = {
                 payload: {
-                    email: 'giovanni.rodighiero@crispybacon.it',
+                    email: 'giovanni.rodighiero@email.it',
                     password: 'password',
                     confirmPassword: 'password',
                     privacyAccepted: true

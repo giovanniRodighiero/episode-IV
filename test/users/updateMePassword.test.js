@@ -30,9 +30,9 @@ describe(`USER PROFILE PASSWORD UPDATE testing ${requestsDetails.method} ${reque
     });
 
     beforeEach(done => {
-        fastify.jwt.sign({ email: 'info@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+        fastify.jwt.sign({ email: 'info@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
             token = accessToken;
-            fastify.jwt.sign({ email: 'info+user@crispybacon.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
+            fastify.jwt.sign({ email: 'info+user@email.it' }, { expiresIn: '2 day' }, (err, accessToken) => {
                 tokenUser = accessToken;
                 done();
             });

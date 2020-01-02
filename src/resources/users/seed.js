@@ -3,70 +3,70 @@ const { encrypt } = require('node-password-encrypter');
 // USERS DATA SEED
 const users = [
     {
-        email: 'info@crispybacon.it',
+        email: 'info@email.it',
         password: 'password',
         role: 100,
         accountConfirmed: true,
         privacyAccepted: true
     },
     {
-        email: 'info+admin@crispybacon.it',
+        email: 'info+admin@email.it',
         password: 'password',
         role: 90,
         accountConfirmed: true,
         privacyAccepted: true
     },
     {
-        email: 'info+localadmin@crispybacon.it',
+        email: 'info+localadmin@email.it',
         password: 'password',
         role: 80,
         accountConfirmed: true,
         privacyAccepted: true
     },
     {
-        email: 'info+userconfirmed@crispybacon.it',
+        email: 'info+userconfirmed@email.it',
         password: 'password',
         role: 70,
         accountConfirmed: true,
         privacyAccepted: true
     },
     {
-        email: 'info+user@crispybacon.it',
+        email: 'info+user@email.it',
         password: 'password',
         role: 70,
         accountConfirmed: false,
         privacyAccepted: true
     },
     {
-        email: 'userfake1@crispybacon.it',
+        email: 'userfake1@email.it',
         password: 'password',
         role: 70,
         accountConfirmed: false,
         privacyAccepted: true
     },
     {
-        email: 'userfake2@crispybacon.it',
+        email: 'userfake2@email.it',
         password: 'password',
         role: 70,
         accountConfirmed: false,
         privacyAccepted: true
     },
     {
-        email: 'userfake3@crispybacon.it',
+        email: 'userfake3@email.it',
         password: 'password',
         role: 70,
         accountConfirmed: false,
         privacyAccepted: true
     },
     {
-        email: 'userfake4@crispybacon.it',
+        email: 'userfake4@email.it',
         password: 'password',
         role: 70,
         accountConfirmed: false,
         privacyAccepted: true
     },
     {
-        email: 'userfake5@crispybacon.it',
+        email: 'userfake5@email.it',
         password: 'password',
         role: 70,
         accountConfirmed: false,

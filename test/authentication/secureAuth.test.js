@@ -98,7 +98,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should fail for expired token', async () => {
         expect.assertions(2);
 
-        const token = fastify.jwt.sign({ email: 'info+user@crispybacon.it' }, { expiresIn: 1 });
+        const token = fastify.jwt.sign({ email: 'info+user@email.it' }, { expiresIn: 1 });
         await sleep(2000);
         try {
             const requestsDetails = buildRequest(token);
@@ -116,7 +116,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should fail for not found user', async () => {
         expect.assertions(2);
 
-        const token = fastify.jwt.sign({ email: 'notfound@crispybacon.it' }, { expiresIn: 1 });
+        const token = fastify.jwt.sign({ email: 'notfound@email.it' }, { expiresIn: 1 });
         await sleep(2000);
         try {
             const requestsDetails = buildRequest(token);
@@ -134,7 +134,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
     test('it should succeed for valid token', async () => {
         expect.assertions(2);
 
-        const token = fastify.jwt.sign({ email: 'info+user@crispybacon.it' }, { expiresIn: '2 days' });
+        const token = fastify.jwt.sign({ email: 'info+user@email.it' }, { expiresIn: '2 days' });
 
         try {
             const requestsDetails = buildRequest(token);
@@ -142,7 +142,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
             const payload = JSON.parse(_payload);
 
             expect(statusCode).toBe(200);
-            expect(payload.user.email).toBe('info+user@crispybacon.it');
+            expect(payload.user.email).toBe('info+user@email.it');
         } catch (error) {
             fastify.log.error('error', error);
             expect(error).toBeUndefined();
