@@ -11,16 +11,15 @@ const multipart = require('fastify-multipart');
 
 const resolve = path.resolve;
 
-const allConfigs = require('./config');
+const { ENVIRONMENTS, config } = require('./config');
 const swaggerConfig = require('./src/services/swagger');
 const pinoConfig = require('./src/services/pino');
 
 
-const ALLOWED_ENVIRONMENT = Object.keys(allConfigs);
-
 // SET UP CORRECT ENV VARIABLE WITH DEFAULT
-if (!process.env.NODE_ENV || !ALLOWED_ENVIRONMENT.includes(process.env.NODE_ENV))
-process.env.NODE_ENV = 'development';
+if (!process.env.NODE_ENV || !ENVIRONMENTS.AVAILABLE.includes(process.env.NODE_ENV))
+    process.env.NODE_ENV = 'development';
+
 console.log('NODE_ENV set to ', process.env.NODE_ENV);
 
 // SET UP LOGGER
@@ -69,7 +68,7 @@ function buildFastify () {
     fastify.setSchemaCompiler(schema => ajv.compile(schema));
 
     // INJECT CONFIG VARIABLES TO THE MAIN INSTANCE (fastify.config / this.config)
-    fastify.decorate('config', allConfigs[process.env.NODE_ENV]);
+    fastify.decorate('config', config);
 
     // CORS HANDLING
     fastify.register(cors);

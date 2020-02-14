@@ -1,6 +1,6 @@
-const config = require('../../../config');
+const { config } = require('../../../config');
 
-const { availableLangs } = config[process.env.NODE_ENV || 'development'];
+const { availableLangs } = config;
 
 const baseSettingsSchema = {
     type: 'object',

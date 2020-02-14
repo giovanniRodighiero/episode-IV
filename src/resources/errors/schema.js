@@ -34,7 +34,7 @@ const generateErrorSchema = (codes, description) => {
         if (codes === 'all')
             codes = availableErrorCodes
         else
-            codes = [ codes ];
+            codes = [codes];
     }
 
     const schema = {

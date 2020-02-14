@@ -1,7 +1,7 @@
-const config = require('../../../config');
+const { config } = require('../../../config');
 const { baseSettingsSchema } = require('../settings/schema');
 
-const { availableLangs } = config[process.env.NODE_ENV || 'development'];
+const { availableLangs } = config;
 
 const baseHomepageSchema = {
     type: 'object',
