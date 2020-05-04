@@ -1,4 +1,4 @@
-const buildFastify = require('../../server');
+const { boot, fastify } = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
@@ -12,13 +12,13 @@ function buildRequest (token, options) {
         ...options
     }
 };
-let fastify, token, tokenUser;
+let token, tokenUser;
 
 const requestsDetails = buildRequest('token');
 describe(`USER PROFILE UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
-        fastify = await buildFastify();
+        await boot();
         await fastify.ready();
     });
 

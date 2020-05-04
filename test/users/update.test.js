@@ -1,4 +1,4 @@
-const buildFastify = require('../../server');
+const { boot, fastify } = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 const { USERS } = require('../../src/resources/users/collection');
@@ -13,13 +13,13 @@ function buildRequest (token, userid, options) {
         ...options
     }
 };
-let fastify, tokenSuperadmin, tokenAdmin, tokenUserConfirmed, Users;
+let tokenSuperadmin, tokenAdmin, tokenUserConfirmed, Users;
 
 const requestsDetails = buildRequest('token', ':id');
 describe(`USER UPDATE testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
-        fastify = await buildFastify();
+        await boot();
         await fastify.ready();
 
         Users = fastify.mongo.db.collection(USERS.collectionName);

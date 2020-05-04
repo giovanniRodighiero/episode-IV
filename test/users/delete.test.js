@@ -1,4 +1,4 @@
-const buildFastify = require('../../server');
+const { boot, fastify } = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 const { USERS } = require('../../src/resources/users/collection');
@@ -12,13 +12,13 @@ function buildRequest (token, userId) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
     }
 };
-let fastify, tokenSuperadmin, tokenUser, tokenAdmin, Users;
+let tokenSuperadmin, tokenUser, tokenAdmin, Users;
 
 const requestsDetails = buildRequest('token', 'id');
 describe(`USER DELETE testing ${requestsDetails.method} ${requestsDetails.url}:id;`, () => {
 
     beforeAll(async () => {
-        fastify = await buildFastify();
+        await boot();
         await fastify.ready();
 
         Users = fastify.mongo.db.collection(USERS.collectionName);

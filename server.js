@@ -1,5 +1,5 @@
 
-const {ENV} = require('./config');
+const { ENV, config } = require('./config');
 
 // SET UP CORRECT ENV VARIABLE WITH DEFAULT
 if (!process.env.NODE_ENV || !ENV.AVAILABLE.includes(process.env.NODE_ENV))
@@ -13,7 +13,6 @@ const fastifySwagger = require('fastify-swagger');
 const cors = require('fastify-cors');
 const Ajv = require('ajv');
 
-const config = require('./config').config();
 const swaggerConfig = require('./src/services/swagger');
 const pinoConfig = require('./src/services/pino')();
 const extraLogs = require('./src/middlewares/extraLogs');
@@ -34,9 +33,12 @@ const ajv = new Ajv({
 });
 require('ajv-keywords')(ajv, 'transform');
 
+let isBooted = false;
 
 // SERVER BOOT FUNCTION
- function buildFastify () {
+async function boot () {
+    if (isBooted) return;
+
     // CATCH UNHANDLEDREJECTION
     process.on('unhandledRejection', function (error) {
         fastify.log.error(error);
@@ -52,18 +54,9 @@ require('ajv-keywords')(ajv, 'transform');
     fastify.register(cors);
 
     // JWT UTILITIES (fastify.jwt / this.jwt)
-    fastify.register(fastifyPlugin(async function (fastify) {
-        fastify.register(jwt, {
-            secret: fastify.config.jwtSecret,
-            // messages: {
-            //     noAuthorizationInHeaderMessage: errorTypes.NOT_AUTHENTICATED,
-            //     badRequestErrorMessage: errorTypes.NOT_AUTHENTICATED,
-            //     authorizationTokenInvalid: _ => errorTypes.NOT_AUTHENTICATED,
-            //     authorizationTokenExpiredMessage: errorTypes.NOT_AUTHENTICATED
-            // }
-        });
-        fastify.decorate('secureAuth', require('./src/middlewares/authentication'));
-    }));
+    fastify.register(require('fastify-jwt'), { secret: config.jwtSecret });
+
+    fastify.decorate('secureAuth', require('./src/middlewares/authentication'));
 
     // NODEMAILER CONFIG (fastify.nodemailer / this.nodemailer)
     fastify.register(fastifyNodeMailer, fastify.config.mailer.nodemailerConf);
@@ -84,10 +77,10 @@ require('ajv-keywords')(ajv, 'transform');
 
     // REGISTER ROUTES/CUSTOM PLUGINS
     fastify.register(fastifyPlugin(require('./src/resources/errors'), { name: 'errors' }));
-    fastify.register(require('./src/resources/users'), { name: 'users' });
     fastify.register(require('./src/resources/authentication'), { name: 'authentication' });
+    fastify.register(require('./src/resources/users'), { name: 'users' });
 
     return fastify;
 }
 
-module.exports = buildFastify;
+module.exports = { fastify, boot };

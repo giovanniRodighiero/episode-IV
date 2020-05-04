@@ -1,4 +1,4 @@
-const buildFastify = require('../../server');
+const { boot, fastify } = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
@@ -9,7 +9,6 @@ function buildRequest (token) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
     }
 };
-let fastify;
 
 const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -22,7 +21,7 @@ describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};
 
     beforeAll(async () => {
         try {
-            fastify = await buildFastify();
+            await boot();
             
             // INJECTING FAKE CONTROLLER TO SIMPLIFY
             fastify.register(async fastify => {

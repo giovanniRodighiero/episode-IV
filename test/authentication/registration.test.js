@@ -1,4 +1,4 @@
-const buildFastify = require('../../server');
+const { boot, fastify } = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
@@ -10,18 +10,13 @@ function buildRequest (options) {
         ...options
     }
 };
-let fastify;
 
 const requestsDetails = buildRequest();
 describe(`REGISTRATION testing ${requestsDetails.method} ${requestsDetails.url};`, () => {
 
     beforeAll(async () => {
-        try {
-            fastify = await buildFastify();
-            await fastify.ready();
-        } catch (error) {
-            console.log(error);
-        }
+        await boot();
+        await fastify.ready();
     });
 
     afterAll(async () => {

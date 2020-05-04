@@ -1,4 +1,4 @@
-const buildFastify = require('../../server');
+const { boot, fastify } = require('../../server');
 const { errorTypes } = require('../../src/resources/errors/schema');
 const { seedUsers } = require('../../src/resources/users/seed');
 
@@ -11,13 +11,13 @@ function buildRequest (token, userId) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
     }
 };
-let fastify, token, tokenAdmin, tokenUserConfirmed;
+let token, tokenAdmin, tokenUserConfirmed;
 
 const requestsDetails = buildRequest('token', 'id');
 describe(`USER DETAILS testing ${requestsDetails.method} ${requestsDetails.url}:id;`, () => {
 
     beforeAll(async () => {
-        fastify = await buildFastify();
+        await boot();
         await fastify.ready();
     });
 

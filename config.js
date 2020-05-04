@@ -83,5 +83,5 @@ function buildConfig (env = process.env.NODE_ENV) {
 
 module.exports = {
     ENV,
-    config: buildConfig,
+    config: buildConfig(),
 };

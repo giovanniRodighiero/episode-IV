@@ -1,16 +1,18 @@
-const server = require('./server')();
-const {ENV} = require('./config');
+if (!process.env.NODE_ENV)
+    process.env.NODE_ENV = 'development';
 
-const runServer = (error, address) => {
-    if (error) {
-        server.log.error(error);
-        return server.close();
-    } else {
-        server.log.info(`running on port ${address}`);
-    }
-};
+if (!process.env.TZ)
+    process.env.TZ = 'Europe/Rome';
     
-if (process.env.NODE_ENV === ENV.DEVELOPMENT)
-    server.listen(server.config.port, '0.0.0.0', runServer);
-else
-    server.listen(server.config.port, runServer);
+const { fastify, boot } = require('./server');
+
+const runServer = error => error ? fastify.close() : null;
+
+boot()
+    .then(_ => {
+        if (process.env.NODE_ENV === 'development')
+            fastify.listen(fastify.config.port, '0.0.0.0', runServer);
+        else
+            fastify.listen(astify.config.port, runServer);
+    })
+    .catch(error => console.log(error))
