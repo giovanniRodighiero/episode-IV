@@ -24,20 +24,24 @@ const fastify = require('fastify')({
 
 fastify.log.info(`NODE_ENV set to ${process.env.NODE_ENV}`);
 
-// SETUP AJV KEYWORDS
-const ajv = new Ajv({
-    removeAdditional: true,
-    useDefaults: true,
-    coerceTypes: true,
-    $data: true
-});
-require('ajv-keywords')(ajv, 'transform');
-
 let isBooted = false;
 
 // SERVER BOOT FUNCTION
-async function boot () {
-    if (isBooted) return;
+function boot () {
+    if (isBooted)
+        return fastify;
+
+    // SETUP AJV KEYWORDS
+    const ajv = new Ajv({
+        removeAdditional: true,
+        useDefaults: true,
+        coerceTypes: true,
+        $data: true
+    });
+    require('ajv-keywords')(ajv, 'transform');
+
+    // CORS HANDLING
+    fastify.register(cors);
 
     // CATCH UNHANDLEDREJECTION
     process.on('unhandledRejection', function (error) {
@@ -47,40 +51,36 @@ async function boot () {
     // SET CUSTOM AJV INSTANCE FOR SCHEMA COMPILATION
     fastify.setSchemaCompiler(schema => ajv.compile(schema));
 
-    // INJECT CONFIG VARIABLES TO THE MAIN INSTANCE (fastify.config / this.config)
-    fastify.decorate('config', config);
-
-    // CORS HANDLING
-    fastify.register(cors);
+    // DATABASE CONNECTION (fastify.mongo / this.mongo = { db, ObjectId, client })
+    fastify.register(fastifyMongoDb, {
+        useNewUrlParser: true,
+        forceClose: true,
+        useUnifiedTopology: true,
+        url: config.database.url
+    });
 
     // JWT UTILITIES (fastify.jwt / this.jwt)
     fastify.register(require('fastify-jwt'), { secret: config.jwtSecret });
 
-    fastify.decorate('secureAuth', require('./src/middlewares/authentication'));
+    // fastify.decorate('secureAuth', require('./src/middlewares/authentication'));
 
     // NODEMAILER CONFIG (fastify.nodemailer / this.nodemailer)
-    fastify.register(fastifyNodeMailer, fastify.config.mailer.nodemailerConf);
+    // fastify.register(fastifyNodeMailer, config.mailer.nodemailerConf);
 
     // DOCUMENTATION PLUGIN
     fastify.register(fastifySwagger, swaggerConfig);
 
-    // DATABASE CONNECTION (fastify.mongo / this.mongo = { db, ObjectId, client })
-    fastify.register(fastifyMongoDb, {
-        useNewUrlParser: true,
-        forceClose: true,      
-        url: fastify.config.database.url
-    });
-
-     // LOG BODY, PINO CANNOT DO IT
-     if (process.env.NODE_ENV !== ENV.PRODUCTION)
-         extraLogs.init(fastify);
+    // LOG BODY, PINO CANNOT DO IT
+    // if (process.env.NODE_ENV !== ENV.PRODUCTION)
+    //     extraLogs.init(fastify);
 
     // REGISTER ROUTES/CUSTOM PLUGINS
-    fastify.register(fastifyPlugin(require('./src/resources/errors'), { name: 'errors' }));
-    fastify.register(require('./src/resources/authentication'), { name: 'authentication' });
-    fastify.register(require('./src/resources/users'), { name: 'users' });
-
+    // fastify.register(fastifyPlugin(require('./src/resources/errors'), { name: 'errors' }));
+    // fastify.register(require('./src/resources/authentication'), { name: 'authentication' });
+    // fastify.register(require('./src/resources/users'), { name: 'users' });
+        
+    isBooted = true;
     return fastify;
 }
 
-module.exports = { fastify, boot };
+module.exports = boot();
