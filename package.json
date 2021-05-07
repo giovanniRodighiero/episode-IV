@@ -23,7 +23,7 @@
         "fastify-nodemailer": "^4.1.1",
         "fastify-plugin": "^1.6.0",
         "fastify-swagger": "^2.5.0",
-        "handlebars": "^4.5.3",
+        "handlebars": "^4.7.7",
         "node-password-encrypter": "^1.0.0"
     },
     "devDependencies": {
